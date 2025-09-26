@@ -1,4 +1,5 @@
 # Netflix like Streaming Service - Database Design
+![ER diagram](https://github.com/user-attachments/assets/e806f401-b61c-4b8b-b9cd-2df0370e5885)
 
 ## **1\. Summary of Requirements**
 
