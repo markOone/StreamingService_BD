@@ -37,8 +37,8 @@
 - **Movie (one and only one ⇔ zero or many) Performance (cartoon hasn't actors)**
 - **Actor (one and only one ⇔ one or many) Performance (in low budget movie one actor can play a few roles)**
 - **Director (one and only one ⇔ one or many) Movie**
-- **Movie (one and only one ⇔ many) Included_Movie**
-- **Subscription_Plan (one and only one ⇔ many) Included_Movie**
+- **Movie (one and only one ⇔ one or many) Included_Movie**
+- **Subscription_Plan (one and only one ⇔ one or many) Included_Movie**
 - **Subscription_Plan (one and only one ⇔ one and only one) User_Subscription**
 - **Subscription_Plan (one and only one ⇔ one and only one) Payment**
 - **User (one and only one ⇔ zero or many) Payment**
@@ -46,7 +46,7 @@
 
 ## 3. Field-Level Constraints
 
-### User
+**User**
 | Field | Type | Constraints |
 |-------|------|-------------|
 | user_id (PK) | INT | NOT NULL, AUTO_INCREMENT |
@@ -59,7 +59,7 @@
 
 > **Note:** Password should store a hash, not plaintext
 
-### Subscription_Plan
+**Subscription_Plan**
 | Field | Type | Constraints |
 |-------|------|-------------|
 | subscription_plan_id (PK) | INT | NOT NULL, AUTO_INCREMENT |
@@ -68,7 +68,7 @@
 | price | DECIMAL(10, 2) | NOT NULL, CHECK (price >= 0) |
 | duration | INT | NOT NULL *(Duration in days, e.g., 30 for monthly)* |
 
-### User_Subscription
+**User_Subscription**
 | Field | Type | Constraints |
 |-------|------|-------------|
 | user_subscription_id (PK) | INT | NOT NULL, AUTO_INCREMENT |
@@ -77,7 +77,7 @@
 | status | VARCHAR(20) | NOT NULL, CHECK (status IN ('active', 'expired', 'cancelled')) |
 | plan_id (FK) | INT | NOT NULL |
 
-### Payment
+**Payment**
 | Field | Type | Constraints |
 |-------|------|-------------|
 | payment_id (PK) | INT | NOT NULL, AUTO_INCREMENT |
@@ -87,7 +87,7 @@
 | subscription_plan_id (FK) | INT | NOT NULL |
 | user_id (FK) | INT | NOT NULL |
 
-### Movie
+**Movie**
 | Field | Type | Constraints |
 |-------|------|-------------|
 | movie_id (PK) | INT | NOT NULL, AUTO_INCREMENT |
@@ -97,7 +97,7 @@
 | rating | DECIMAL(3, 1) | NULLABLE, CHECK (rating >= 0.0 AND rating <= 10.0) |
 | director_id (FK) | INT | NOT NULL |
 
-### Director
+**Director**
 | Field | Type | Constraints |
 |-------|------|-------------|
 | director_id (PK) | INT | NOT NULL, AUTO_INCREMENT |
@@ -105,7 +105,7 @@
 | surname | VARCHAR(100) | NOT NULL |
 | biography | TEXT | NULLABLE |
 
-### Actor
+**Actor**
 | Field | Type | Constraints |
 |-------|------|-------------|
 | actor_id (PK) | INT | NOT NULL, AUTO_INCREMENT |
@@ -113,7 +113,7 @@
 | surname | VARCHAR(100) | NOT NULL |
 | biography | TEXT | NULLABLE |
 
-### Performance
+**Performance**
 | Field | Type | Constraints |
 |-------|------|-------------|
 | performance_id (PK) | INT | NOT NULL, AUTO_INCREMENT |
@@ -122,7 +122,7 @@
 | actor_id (FK) | INT | NOT NULL |
 | movie_id (FK) | INT | NOT NULL |
 
-### Included_Movie
+**Included_Movie**
 | Field | Type | Constraints |
 |-------|------|-------------|
 | movie_id (FK, PK component) | INT | NOT NULL |
