@@ -1,7 +1,13 @@
 # Netflix like Streaming Service - Database Design
-![ER diagram](https://github.com/user-attachments/assets/e806f401-b61c-4b8b-b9cd-2df0370e5885)
+![ER diagram](https://github.com/user-attachments/assets/a125b0c0-ff6a-45be-acec-686d870d7b02)
 
-## **1\. Summary of Requirements**
+## Table of Contents
+- [Summary of Requirements](#1-summary-of-requirements)
+- [Entities, Attributes, and Relationships](#2-entities-attributes-and-relationships)
+- [Field-Level Constraints](#3-field-level-constraints)
+- [System Features](#4-system-features)
+  
+## **1. Summary of Requirements**
 
 - **Stakeholder Needs**: The system requires a robust backend to manage a subscription-based streaming service. Key needs to include user account management (registration, login), a comprehensive movie catalog (information on movies, directors, actors), and a complete subscription lifecycle system (plan selection, payment processing, subscription status management).
 - **Data to be stored**:
@@ -16,7 +22,7 @@
   - Each specific user subscription instance is based on one specific plan.
   - Each payment is made by one user for user subscription.
 
-## **2\. Entities, Attributes, and Relationships**
+## **2. Entities, Attributes, and Relationships**
 
 **Entities: Actor, Performance, Movie, Director, Payment, User, User_Subscription, Subscription_Plan, Included_Movie**
 
