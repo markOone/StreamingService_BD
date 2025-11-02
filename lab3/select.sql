@@ -14,3 +14,27 @@ SELECT payment_id, paid_at, amount, status, user_subscription_id
 FROM payment
 WHERE status = 'COMPLETED'
 ORDER BY paid_at DESC;
+
+-- 4) Select Movies of certain Actor("Christian Bale")
+SELECT m.title, m.description, m.year, m.rating, a.name, a.surname
+FROM  movie m, performance p, actor a
+WHERE m.id = p.movie_id AND p.actor_id = a.id AND a.name = "Christian" AND a.surname = "Bale"
+ORDER BY m.year ASC;
+
+-- 5) Select movies of certain Director("Cristopher Nolan")
+SELECT title, description, year, rating, name, surname
+FROM movie, director
+WHERE director_id = d.id AND name = "Christopher" AND surname = "Nolan"
+ORDER BY year ASC;
+
+-- 6) Select normal movies
+SELECT title, description, year
+FROM movie
+WHERE rating >= 6.0
+ORDER BY year ASC;
+
+-- 7) Select top 10 movies of our service
+SELECT title, description, year
+FROM movie
+ORDER BY rating DESC
+LIMIT 10;
