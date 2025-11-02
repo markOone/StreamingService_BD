@@ -202,8 +202,8 @@ volumes:
 
 ## Evidence of our hard work 1
 
-![select user](img\select_user.png)
+![select user](img/select_user.png)
 
 ## Evidence of our hard work 2
 
-![public schema](img\public_schema.png)
+![public schema](img/public_schema.png)
