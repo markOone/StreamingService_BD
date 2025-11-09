@@ -73,6 +73,7 @@ ORDER BY roles_count DESC;
 
 ## Groups filtering x5
 
+Фільтрує користувачів, у яких кількість невдалих платежів дорівнює 1 або більше.
 ```sql
 SELECT
     u.name,
@@ -86,7 +87,9 @@ WHERE p.status = 'FAILED'
 GROUP BY u.user_id, u.name, u.surname, u.email
 HAVING COUNT(p.payment_id) >= 1
 ORDER BY failed_payment_count DESC;
-
+```
+Фільтрує акторів, які зіграли одного й того ж персонажа у більш ніж одному фільмі.
+```sql
 SELECT
     a.name,
     a.surname,
@@ -97,7 +100,9 @@ FROM actor a
 GROUP BY a.actor_id, a.name, a.surname, p.character_name
 HAVING COUNT(p.movie_id) > 1
 ORDER BY movie_appearances DESC;
-
+```
+Фільтрує плани підписки, які мають менше двох активних користувачів.
+```sql
 SELECT
     sp.name AS plan_name,
     COUNT(us.user_subscription_id) AS active_subscribers
@@ -106,7 +111,9 @@ FROM subscription_plan sp
 GROUP BY sp.subscription_plan_id, sp.name
 HAVING COUNT(us.user_subscription_id) < 2
 ORDER BY active_subscribers DESC, plan_name;
-
+```
+Фільтрує користувачів, які в сумі витратили більше 100 помідорів на підписки
+```sql
 SELECT
     u.name,
     u.surname,
@@ -118,7 +125,9 @@ WHERE p.status = 'COMPLETED'
 GROUP BY u.user_id, u.name, u.surname
 HAVING SUM(p.amount) > 100.00
 ORDER BY total_spent DESC, u.name;
-
+```
+Фільтрує фільми, які включені в не більше ніж один план підписки
+```sql
 SELECT
     m.title,
     COUNT(im.subscription_plan_id) AS plan_count
@@ -131,6 +140,7 @@ ORDER BY plan_count, m.title;
 
 ## Multi-table aggregation x5
 
+Визначає загальний дохід, отриманий від кожного плану підписки.
 ```sql
 SELECT
     sp.name AS plan_name,
@@ -141,7 +151,9 @@ FROM subscription_plan sp
 WHERE p.status = 'COMPLETED'
 GROUP BY sp.subscription_plan_id, sp.name
 ORDER BY total_revenue DESC, plan_name;
-
+```
+Обчислює кількість знятих фільмів та середній рейтинг для кожного режисера.
+```sql
 SELECT
     d.name,
     d.surname,
@@ -151,7 +163,9 @@ FROM director d
 	JOIN movie m USING(director_id)
 GROUP BY d.director_id, d.name, d.surname
 ORDER BY average_rating DESC, d.name;
-
+```
+Обчислює кількість фільмів, включених до кожного плану підписки.
+```sql
 SELECT
     sp.name AS plan_name,
     sp.price,
@@ -160,7 +174,9 @@ FROM subscription_plan sp
 	LEFT JOIN included_movie im USING(subscription_plan_id)
 GROUP BY sp.subscription_plan_id, sp.name, sp.price
 ORDER BY movie_count DESC, plan_name;
-
+```
+Обчислює загальну суму повернутих коштів (refunds) для кожного плану підписки.
+```sql
 SELECT
     sp.name AS plan_name,
     COALESCE(SUM(p.amount), 0.00) AS total_refund_amount
@@ -169,7 +185,9 @@ FROM subscription_plan sp
 	LEFT JOIN payment p ON us.user_subscription_id = p.user_subscription_id AND p.status = 'REFUNDED'
 GROUP BY sp.subscription_plan_id, sp.name
 ORDER BY total_refund_amount DESC, sp.name;
-
+```
+Знаходить найкращих 5 акторів за середнім рейтингом фільмів, у яких вони брали участь
+```sql
 SELECT
     a.name AS actor_name,
     a.surname AS actor_surname,
