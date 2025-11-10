@@ -2,137 +2,192 @@
 
 ## JOIN queries
 
-* Select subscription plans with their included films
+1. Select subscription plans with their included films
   – use `INNER JOIN` to return only those `subscription plans` that actually contain `movies`
 
 ```sql
-SELECT sp.name, m.title
+SELECT
+    sp.name,
+    m.title
 FROM public.subscription_plan AS sp
-INNER JOIN included_movie USING (subscription_plan_id)
-INNER JOIN movie AS m USING (movie_id);
+    INNER JOIN included_movie USING (subscription_plan_id)
+    INNER JOIN movie AS m USING (movie_id);
 ```
 
-* Select all actors with their roles
+2. Select all actors with their roles
   – use `RIGHT JOIN` to include all `actors` even if they have no `roles`
 
 ```sql
-SELECT a.name, a.surname, p.character_name
+SELECT
+    a.name,
+    a.surname,
+    p.character_name
 FROM performance AS p
-RIGHT JOIN actor AS a ON a.actor_id = p.actor_id;
+    RIGHT JOIN actor AS a ON a.actor_id = p.actor_id;
 ```
 
-* Select movies and their directors
+3. Select movies and their directors
   – use `FULL JOIN` to display both `movies` and `directors` (including unmatched rows)
 
 ```sql
-SELECT m.title, d.name, d.surname
+SELECT
+    m.title,
+    d.name,
+    d.surname
 FROM movie AS m
-FULL JOIN director AS d USING (director_id);
+    FULL JOIN director AS d USING (director_id);
 ```
 
-* Select all actors with starred movies
+4. Select all actors with starred movies
   – use `LEFT JOIN` to include all existing actors
 
 ```sql
-SELECT a.name, a.surname, m.title AS movie_title, p.character_name
+SELECT
+    a.name,
+    a.surname,
+    m.title AS movie_title,
+    p.character_name
 FROM actor AS a
-LEFT JOIN performance AS p USING (actor_id)
-LEFT JOIN movie AS m USING (movie_id);
+    LEFT JOIN performance AS p USING (actor_id)
+    LEFT JOIN movie AS m USING (movie_id);
 ```
 
-* Select payment history for each user
+5. Select payment history for each user
   – using `RIGHT JOIN` with `user` and `LEFT JOIN` to related tables ensures users without subscriptions or payments are still shown
 
 ```sql
-SELECT u.name, u.surname, sp.name AS plan_name, p.amount
+SELECT
+    u.name,
+    u.surname,
+    sp.name AS plan_name,
+    p.amount
 FROM user_subscription AS us
-RIGHT JOIN "user" AS u USING (user_id)
-LEFT JOIN subscription_plan AS sp USING (subscription_plan_id)
-LEFT JOIN payment AS p USING (user_subscription_id);
+    RIGHT JOIN "user" AS u USING (user_id)
+    LEFT JOIN subscription_plan AS sp USING (subscription_plan_id)
+    LEFT JOIN payment AS p USING (user_subscription_id);
 ```
+---
 
 ## Base aggregation
 
-* Select total sum of payments for each user
+1. Select total sum of payments for each user
 
 ```sql
-SELECT u.user_id, u.name, u.surname, SUM(p.amount) AS total_amount
+SELECT
+    u.user_id,
+    u.name,
+    u.surname,
+    SUM(p.amount) AS total_amount
 FROM user_subscription AS us
-INNER JOIN payment AS p USING (user_subscription_id)
-RIGHT JOIN "user" AS u USING (user_id)
+    INNER JOIN payment AS p USING (user_subscription_id)
+    RIGHT JOIN "user" AS u USING (user_id)
 GROUP BY u.user_id, u.name, u.surname;
 ```
 
-* Count how many films are included in each subscription plan
+2. Count how many films are included in each subscription plan
 
 ```sql
-SELECT sp.subscription_plan_id, sp.name, COUNT(*) AS film_count
+SELECT
+    sp.subscription_plan_id,
+    sp.name,
+    COUNT(*) AS film_count
 FROM public.subscription_plan AS sp
-INNER JOIN included_movie AS im USING (subscription_plan_id)
+    INNER JOIN included_movie AS im USING (subscription_plan_id)
 GROUP BY sp.subscription_plan_id, sp.name;
 ```
 
-* Get average subscription plan price
+3. Get average subscription plan price
 
 ```sql
 SELECT AVG(sp.price) AS avg_price
 FROM public.subscription_plan AS sp;
 ```
 
-* Get the cheapest subscription plan price
+4. Get the cheapest subscription plan price
 
 ```sql
 SELECT MIN(sp.price) AS cheapest_price
 FROM public.subscription_plan AS sp;
 ```
 
-* Get the average rating of films in which each actor starred
+5. Get the average rating of films in which each actor starred
 
 ```sql
 SELECT 
-  a.name, 
-  a.surname, 
-  ROUND(AVG(m.rating), 2) AS avg_rating
+    a.name, 
+    a.surname, 
+    ROUND(AVG(m.rating), 2) AS avg_rating
 FROM actor AS a
-LEFT JOIN performance AS p USING (actor_id)
-LEFT JOIN movie AS m USING (movie_id)
+    LEFT JOIN performance AS p USING (actor_id)
+    LEFT JOIN movie AS m USING (movie_id)
 GROUP BY a.actor_id, a.name, a.surname;
 ```
-
 ---
 
-## Grouping x5
+## Grouping
+
+1.
 
 ```sql
-SELECT year, COUNT(movie_id) AS movies_per_year
+SELECT
+    year,
+    COUNT(movie_id) AS movies_per_year
 FROM movie
 GROUP BY year
 ORDER BY year DESC;
+```
 
-SELECT duration, MIN(price) AS min_price, MAX(price) AS max_price, AVG(price) AS avg_price
+2.
+
+```sql
+SELECT
+    duration,
+    MIN(price) AS min_price,
+    MAX(price) AS max_price,
+    AVG(price) AS avg_price
 FROM subscription_plan
 GROUP BY duration
 ORDER BY duration;
+```
 
-SELECT FLOOR(rating) AS rating_group, COUNT(movie_id) AS num_movies, AVG(rating) AS average_rating_in_group
+3.
+
+```sql
+SELECT
+    FLOOR(rating) AS rating_group,
+    COUNT(movie_id) AS num_movies,
+    AVG(rating) AS average_rating_in_group
 FROM movie
 WHERE rating IS NOT NULL
 GROUP BY rating_group
 ORDER BY rating_group DESC;
+```
 
-SELECT status, COUNT(payment_id) AS payments_count
+4.
+
+```sql
+SELECT
+    status,
+    COUNT(payment_id) AS payments_count
 FROM payment
 GROUP BY status;
+```
 
-SELECT actor_id, COUNT(performance_id) AS roles_count
+5.
+
+```sql
+SELECT
+    actor_id,
+    COUNT(performance_id) AS roles_count
 FROM performance
 GROUP BY actor_id
 ORDER BY roles_count DESC;
 ```
+---
 
-## Groups filtering x5
+## Groups filtering
 
-Фільтрує користувачів, у яких кількість невдалих платежів дорівнює 1 або більше.
+1. Фільтрує користувачів, у яких кількість невдалих платежів дорівнює 1 або більше.
 
 ```sql
 SELECT
@@ -141,15 +196,15 @@ SELECT
     u.email,
     COUNT(p.payment_id) AS failed_payment_count
 FROM "user" u
-JOIN user_subscription us USING(user_id)
-JOIN payment p USING(user_subscription_id)
+	JOIN user_subscription us USING(user_id)
+	JOIN payment p USING(user_subscription_id)
 WHERE p.status = 'FAILED'
 GROUP BY u.user_id, u.name, u.surname, u.email
 HAVING COUNT(p.payment_id) >= 1
 ORDER BY failed_payment_count DESC;
 ```
 
-Фільтрує акторів, які зіграли одного й того ж персонажа у більш ніж одному фільмі.
+2. Фільтрує акторів, які зіграли одного й того ж персонажа у більш ніж одному фільмі.
 
 ```sql
 SELECT
@@ -158,26 +213,26 @@ SELECT
     p.character_name,
     COUNT(p.movie_id) AS movie_appearances
 FROM actor a
-JOIN performance p USING(actor_id)
+	JOIN performance p USING(actor_id)
 GROUP BY a.actor_id, a.name, a.surname, p.character_name
 HAVING COUNT(p.movie_id) > 1
 ORDER BY movie_appearances DESC;
 ```
 
-Фільтрує плани підписки, які мають менше двох активних користувачів.
+3. Фільтрує плани підписки, які мають менше двох активних користувачів.
 
 ```sql
 SELECT
     sp.name AS plan_name,
     COUNT(us.user_subscription_id) AS active_subscribers
 FROM subscription_plan sp
-LEFT JOIN user_subscription us ON sp.subscription_plan_id = us.subscription_plan_id AND us.status = 'ACTIVE' 
+	LEFT JOIN user_subscription us ON sp.subscription_plan_id = us.subscription_plan_id AND us.status = 'ACTIVE' 
 GROUP BY sp.subscription_plan_id, sp.name
 HAVING COUNT(us.user_subscription_id) < 2
 ORDER BY active_subscribers DESC, plan_name;
 ```
 
-Фільтрує користувачів, які в сумі витратили більше 100 помідорів на підписки
+4. Фільтрує користувачів, які в сумі витратили більше 100 помідорів на підписки.
 
 ```sql
 SELECT
@@ -185,44 +240,45 @@ SELECT
     u.surname,
     SUM(p.amount) AS total_spent
 FROM "user" u
-JOIN user_subscription us USING(user_id)
-JOIN payment p USING(user_subscription_id)
+	JOIN user_subscription us USING(user_id)
+	JOIN payment p USING(user_subscription_id)
 WHERE p.status = 'COMPLETED'
 GROUP BY u.user_id, u.name, u.surname
 HAVING SUM(p.amount) > 100.00
 ORDER BY total_spent DESC, u.name;
 ```
 
-Фільтрує фільми, які включені в не більше ніж один план підписки
+5. Фільтрує фільми, які включені в не більше ніж один план підписки
 
 ```sql
 SELECT
     m.title,
     COUNT(im.subscription_plan_id) AS plan_count
 FROM movie m
-JOIN included_movie im ON m.movie_id = im.movie_id
+	JOIN included_movie im ON m.movie_id = im.movie_id
 GROUP BY m.movie_id, m.title
 HAVING COUNT(im.subscription_plan_id) <= 1
 ORDER BY plan_count, m.title;
 ```
+---
 
-## Multi-table aggregation x5
+## Multi-table aggregation
 
-Визначає загальний дохід, отриманий від кожного плану підписки.
+1. Визначає загальний дохід, отриманий від кожного плану підписки.
 
 ```sql
 SELECT
     sp.name AS plan_name,
     SUM(p.amount) AS total_revenue
 FROM subscription_plan sp
-JOIN user_subscription us USING(subscription_plan_id)
-JOIN payment p USING(user_subscription_id)
+	JOIN user_subscription us USING(subscription_plan_id)
+	JOIN payment p USING(user_subscription_id)
 WHERE p.status = 'COMPLETED'
 GROUP BY sp.subscription_plan_id, sp.name
 ORDER BY total_revenue DESC, plan_name;
 ```
 
-Обчислює кількість знятих фільмів та середній рейтинг для кожного режисера.
+2. Обчислює кількість знятих фільмів та середній рейтинг для кожного режисера.
 
 ```sql
 SELECT
@@ -231,12 +287,12 @@ SELECT
     COUNT(m.movie_id) AS movie_count,
     ROUND(AVG(m.rating), 2) AS average_rating
 FROM director d
-JOIN movie m USING(director_id)
+	JOIN movie m USING(director_id)
 GROUP BY d.director_id, d.name, d.surname
 ORDER BY average_rating DESC, d.name;
 ```
 
-Обчислює кількість фільмів, включених до кожного плану підписки.
+3. Обчислює кількість фільмів, включених до кожного плану підписки.
 
 ```sql
 SELECT
@@ -244,25 +300,25 @@ SELECT
     sp.price,
     COUNT(im.movie_id) AS movie_count
 FROM subscription_plan sp
-LEFT JOIN included_movie im USING(subscription_plan_id)
+	LEFT JOIN included_movie im USING(subscription_plan_id)
 GROUP BY sp.subscription_plan_id, sp.name, sp.price
 ORDER BY movie_count DESC, plan_name;
 ```
 
-Обчислює загальну суму повернутих коштів (refunds) для кожного плану підписки.
+4. Обчислює загальну суму повернутих коштів (refunds) для кожного плану підписки.
 
 ```sql
 SELECT
     sp.name AS plan_name,
     COALESCE(SUM(p.amount), 0.00) AS total_refund_amount
 FROM subscription_plan sp
-LEFT JOIN user_subscription us USING(subscription_plan_id)
-LEFT JOIN payment p ON us.user_subscription_id = p.user_subscription_id AND p.status = 'REFUNDED'
+	LEFT JOIN user_subscription us USING(subscription_plan_id)
+	LEFT JOIN payment p ON us.user_subscription_id = p.user_subscription_id AND p.status = 'REFUNDED'
 GROUP BY sp.subscription_plan_id, sp.name
 ORDER BY total_refund_amount DESC, sp.name;
 ```
 
-Знаходить найкращих 5 акторів за середнім рейтингом фільмів, у яких вони брали участь
+5. Знаходить найкращих 5 акторів за середнім рейтингом фільмів, у яких вони брали участь.
 
 ```sql
 SELECT
@@ -271,10 +327,11 @@ SELECT
     ROUND(AVG(m.rating), 2) AS average_movie_rating,
     COUNT(DISTINCT m.movie_id) AS total_movies_count
 FROM actor a
-JOIN performance p USING(actor_id)
-JOIN movie m USING(movie_id)
+	JOIN performance p USING(actor_id)
+	JOIN movie m USING(movie_id)
 GROUP BY a.actor_id, a.name, a.surname
 HAVING COUNT(DISTINCT m.movie_id) >= 1
 ORDER BY average_movie_rating DESC, total_movies_count DESC, actor_surname
 LIMIT 5;
 ```
+---
