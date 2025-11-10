@@ -3,7 +3,7 @@ SELECT * FROM movie;
 
 UPDATE movie
 SET rating = 8.0
-WHERE title = 'Wonder Woman';
+WHERE title = 'Inception';
 
 SELECT * FROM movie;
 
@@ -11,8 +11,8 @@ SELECT * FROM movie;
 SELECT * FROM "user";
 
 UPDATE "user"
-SET email = 'eve.a@example.com'
-WHERE email = 'eve@example.com';
+SET email = 'alice@example.com'
+WHERE email = 'new_alice@example.com';
 
 SELECT * FROM "user";
 
@@ -21,6 +21,6 @@ SELECT * FROM user_subscription;
 
 UPDATE user_subscription
 SET status = 'CANCELLED'
-WHERE user_id = 1 AND status = 'ACTIVE';
+WHERE user_id = 5 AND status = 'ACTIVE';
 
 SELECT * FROM user_subscription;
