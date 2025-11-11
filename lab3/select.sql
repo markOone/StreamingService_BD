@@ -10,7 +10,7 @@ WHERE price <= 9.99
 ORDER BY price;
 
 -- 3) Select completed payments ordered by payment date
-SELECT payment_id, paid_at, amount, status, user_subscription_id
+SELECT *
 FROM payment
 WHERE status = 'COMPLETED'
 ORDER BY paid_at DESC;
@@ -25,12 +25,12 @@ AND a.surname = 'Bale'
 ORDER BY m.year ASC;
 
 -- 5) Select movies of certain Director("Cristopher Nolan")
-SELECT title, description, year, rating, name, surname
-FROM movie, director
-WHERE movie.director_id = director.director_id
-  AND name = 'Christopher'
-  AND surname = 'Nolan'
-ORDER BY year ASC;
+SELECT m.title, m.description, m.year, m.rating, d.name, d.surname
+FROM movie AS m, director AS d
+WHERE m.director_id = d.director_id
+AND d.name = 'Christopher'
+AND d.surname = 'Nolan'
+ORDER BY m.year ASC;
 
 -- 6) Select normal movies
 SELECT title, description, year
@@ -39,7 +39,7 @@ WHERE rating >= 6.0
 ORDER BY year ASC;
 
 -- 7) Select top 10 movies of our service
-SELECT title, description, year
+SELECT title, description, year, rating
 FROM movie
 ORDER BY rating DESC
 LIMIT 10;
