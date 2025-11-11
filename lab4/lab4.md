@@ -185,7 +185,7 @@ ORDER BY roles_count DESC;
 ```
 ---
 
-## Groups filtering x5
+## Groups filtering
 
 1. Filters users who have 1 or more failed payments.
 
@@ -262,7 +262,7 @@ ORDER BY plan_count, m.title;
 ```
 ---
 
-## Multi-table aggregation x5
+## Multi-table aggregation
 
 1. Calculates the total revenue generated from each subscription plan.
 
