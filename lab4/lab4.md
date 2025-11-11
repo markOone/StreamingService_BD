@@ -126,7 +126,7 @@ GROUP BY a.actor_id, a.name, a.surname;
 
 ## Grouping
 
-1.
+1. Get the quantity of movies made in specific year that the service currently allows to watch.
 
 ```sql
 SELECT
@@ -137,7 +137,7 @@ GROUP BY year
 ORDER BY year DESC;
 ```
 
-2.
+2. Сalculates the minimum, maximum, and average price for each subscription term (duration), sorting the results by term.
 
 ```sql
 SELECT
@@ -150,7 +150,7 @@ GROUP BY duration
 ORDER BY duration;
 ```
 
-3.
+3. This SQL query aggregates movies based on the integer part of their rating, counting the movies in each group and calculating the true average rating within that group.
 
 ```sql
 SELECT
@@ -163,7 +163,7 @@ GROUP BY rating_group
 ORDER BY rating_group DESC;
 ```
 
-4.
+4. Сalculates the total number of payments for every unique status recorded in the payment table.
 
 ```sql
 SELECT
@@ -173,7 +173,7 @@ FROM payment
 GROUP BY status;
 ```
 
-5.
+5. Сalculates the total number of roles performed by each actor present in the performance table and then sorts the results to list the most prolific actors first.
 
 ```sql
 SELECT
