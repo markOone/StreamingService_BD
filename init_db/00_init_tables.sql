@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS user_subscription (
     end_time TIMESTAMP NOT NULL,
     status subscription_status NOT NULL,
     subscription_plan_id INT NOT NULL REFERENCES subscription_plan(subscription_plan_id),
-    user_id INT NOT NULL REFERENCES "user"(user_id)
+    user_id INT NOT NULL REFERENCES "user"(user_id),
 	CONSTRAINT check_subscription_dates CHECK (end_time > start_time)
 );
 
