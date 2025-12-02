@@ -14,7 +14,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init_db:/docker-entrypoint-initdb.d
     networks:
       - db-network
     healthcheck: # check if Postgres is ready to accept connections
