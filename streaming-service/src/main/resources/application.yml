@@ -1,0 +1,12 @@
+spring:
+  flyway:
+    enabled: true
+    default-schema: public
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+
+server:
+  port: 8081
