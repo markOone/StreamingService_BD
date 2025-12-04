@@ -1,6 +1,6 @@
 ## Міграція V1: Ініціалізація схеми
 
-**Файл:** [`V1__init_schema.sql`](streaming-service/src/main/resources/db/migration/V1__init_schema.sql)
+**Файл:** [`V1__init_schema.sql`](src/main/resources/db/migration/V1__init_schema.sql)
 
 **Опис:** Створення початкової структури бази даних
 
@@ -12,7 +12,7 @@
 
 ## Міграція V2: Додавання нової таблиці
 
-**Файл:** [`V2__add_review_table.sql`](streaming-service/src/main/resources/db/migration/V2__add_review_table.sql)
+**Файл:** [`V2__add_review_table.sql`](src/main/resources/db/migration/V2__add_review_table.sql)
 
 **Опис:** Створено таблицю `review` для зберігання відгуків користувачів про фільми
 
@@ -38,7 +38,7 @@ CREATE TABLE review
 
 ## Міграція V3: Зміна наявної таблиці
 
-**Файл:** [`V3__add_phone_number.sql`](streaming-service/src/main/resources/db/migration/V3__add_phone_number.sql)
+**Файл:** [`V3__add_phone_number.sql`](src/main/resources/db/migration/V3__add_phone_number.sql)
 
 **Опис:** До таблиці `"user"` додано поле `phone`.
 
@@ -63,7 +63,7 @@ ALTER TABLE "user"
 
 ## Міграція V4: Видалення стовпця
 
-**Файл:** [`V4__delete_paid_at.sql`](streaming-service/src/main/resources/db/migration/V4__delete_paid_at.sql)
+**Файл:** [`V4__delete_paid_at.sql`](src/main/resources/db/migration/V4__delete_paid_at.sql)
 
 **Опис:** З таблиці `payment` видалено поле `paid_at`
 
@@ -82,7 +82,7 @@ ALTER TABLE payment
 
 ## Міграція V5: Перейменування таблиці
 
-**Файл:** [`V5__rename_user_table.sql`](streaming-service/src/main/resources/db/migration/V5__rename_user_table.sql)
+**Файл:** [`V5__rename_user_table.sql`](src/main/resources/db/migration/V5__rename_user_table.sql)
 **Опис:** Таблицю `"user"` перейменовано на `users`
 
 **SQL:**
@@ -101,7 +101,7 @@ ALTER SEQUENCE user_user_id_seq RENAME TO users_user_id_seq;
 
 ## Міграція V6: Видалення зв'язку
 
-**Файл:** [`V6__delete_relationship.sql`](streaming-service/src/main/resources/db/migration/V6__delete_relationship.sql)
+**Файл:** [`V6__delete_relationship.sql`](src/main/resources/db/migration/V6__delete_relationship.sql)
 
 **Опис:** Видалено зовнішній ключ та колонку `user_subscription_id` з таблиці `payment`
 
@@ -120,4 +120,4 @@ ALTER TABLE payment
 
 ## Підтвердження коректності роботи
 
-Для перевірки цілісності даних після всіх міграцій було використано скрипт [`verify_lab6.sql`](streaming-service/scripts/verify_lab6.sql)
+Для перевірки цілісності даних після всіх міграцій було використано скрипт [`verify_lab6.sql`](scripts/verify_lab6.sql)
