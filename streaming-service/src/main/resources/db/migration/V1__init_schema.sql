@@ -82,3 +82,5 @@ CREATE TABLE IF NOT EXISTS payment (
     status payment_status NOT NULL,
     user_subscription_id INT NOT NULL REFERENCES user_subscription(user_subscription_id)
 );
+
+-- TODO: create indexes

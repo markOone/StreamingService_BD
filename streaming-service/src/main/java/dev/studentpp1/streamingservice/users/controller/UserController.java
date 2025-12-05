@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-// TODO: register/login will be in auth module
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -17,16 +18,15 @@ public class UserController {
     private final UserService userService;
     private final UserDtoMapper userDtoMapper;
 
-    @PostMapping
+    @PostMapping("/update")
     public ResponseEntity<UserDto> updateUser(@RequestBody UpdateUserRequest request) {
         UserDto userDto = userDtoMapper.toUserDto(userService.updateUser(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
     }
 
-    // TODO: change to Principal (after implementing auth module)
-    @GetMapping
-    public ResponseEntity<UserDto> getInfo(@RequestParam("id") Long id) {
-        UserDto userDto = userDtoMapper.toUserDto(userService.getInfo(id));
+    @GetMapping("/info")
+    public ResponseEntity<UserDto> getInfo(Principal principal) {
+        UserDto userDto = userDtoMapper.toUserDto(userService.getInfo(principal));
         return ResponseEntity.ok(userDto);
     }
 }

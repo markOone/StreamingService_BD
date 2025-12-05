@@ -1,5 +1,6 @@
 package dev.studentpp1.streamingservice.users.entity;
 
+import dev.studentpp1.streamingservice.auth.persistence.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,4 +34,8 @@ public class AppUser {
 
     @Column(nullable = false)
     private LocalDate birthday;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
 }
