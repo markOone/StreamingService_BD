@@ -2,6 +2,7 @@ spring:
   flyway:
     enabled: true
     default-schema: public
+    target: latest
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USER}

@@ -6,7 +6,7 @@
 
 **Результат:**
 
-> 
+![v1.png](images/v1.png)
 
 -----
 
@@ -32,7 +32,7 @@ CREATE TABLE review
 
 **Результат:**
 
-> 
+![v2.png](images/v2.png)
 
 -----
 
@@ -57,7 +57,7 @@ ALTER TABLE "user"
 
 **Результат:**
 
-> 
+![v3.png](images/v3.png)
 
 -----
 
@@ -76,7 +76,11 @@ ALTER TABLE payment
 
 **Результат:**
 
-> 
++ before
+![before_v4.png](images/before_v4.png)
+
++ after
+![v4.png](images/v4.png)
 
 -----
 
@@ -95,7 +99,7 @@ ALTER SEQUENCE user_user_id_seq RENAME TO users_user_id_seq;
 
 **Результат:**
 
->
+![v5.png](images/v5.png)
 
 -----
 
@@ -114,10 +118,19 @@ ALTER TABLE payment
 
 **Результат:**
 
-> 
+![v6.png](images/v6.png)
 
 -----
 
 ## Підтвердження коректності роботи
 
 Для перевірки цілісності даних після всіх міграцій було використано скрипт [`verify_lab6.sql`](scripts/verify_lab6.sql)
+
++ Перевірка поля phone
+![phone_check.png](images/phone_check.png)
+
++ Перевірка зв'язків review
+![review_relationship.png](images/review_relationship.png)
+
++ Перевірка таблиці payment
+![new_payment.png](images/new_payment.png)
