@@ -16,15 +16,17 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
+
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private static final String[] WHITE_LIST = {
-            "/api/auth/login",
-            "/api/auth/register",
-            "/api/subscription/plans",
-            "/api/movie/{movie_id}",
-            "/api/movie/actor/{actor_id}",
-            "/api/movie/director/{director_id}"
+        "/api/auth/login",
+        "/api/auth/register",
+        "/api/subscription-plans",
+        "/api/subscription-plans/{id}",
+        "/api/movie/{movie_id}",
+        "/api/movie/actor/{actor_id}",
+        "/api/movie/director/{director_id}"
     };
 
     // one AuthenticationManager for one filter chain
