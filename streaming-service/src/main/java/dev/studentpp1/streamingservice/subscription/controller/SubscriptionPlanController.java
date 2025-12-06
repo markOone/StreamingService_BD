@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,6 +35,7 @@ public class SubscriptionPlanController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SubscriptionPlanDto> updatePlan(
             @PathVariable Integer id,
             @Valid @RequestBody CreateSubscriptionPlanRequest request) {
@@ -41,6 +43,7 @@ public class SubscriptionPlanController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletePlan(@PathVariable Integer id) {
         subscriptionPlanService.deletePlan(id);
         return ResponseEntity.noContent().build();
