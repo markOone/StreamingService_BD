@@ -1,4 +1,4 @@
-﻿package dev.studentpp1.streamingservice.movies.service;
+package dev.studentpp1.streamingservice.movies.service;
 
 import dev.studentpp1.streamingservice.movies.dto.MovieDto;
 import dev.studentpp1.streamingservice.movies.entity.Director;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class MovieService {
 
     private final MovieRepository movieRepository;
-    private final DirectorRepository directorRepository; // Треба, щоб знайти режисера
+    private final DirectorRepository directorRepository;
     private final MovieMapper movieMapper;
 
     public MovieService(MovieRepository movieRepository, DirectorRepository directorRepository, MovieMapper movieMapper) {

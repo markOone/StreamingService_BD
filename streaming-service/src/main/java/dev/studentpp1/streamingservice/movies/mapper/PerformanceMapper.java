@@ -1,36 +1,18 @@
-﻿package dev.studentpp1.streamingservice.movies.mapper;
+package dev.studentpp1.streamingservice.movies.mapper;
 
 import dev.studentpp1.streamingservice.movies.dto.PerformanceDto;
 import dev.studentpp1.streamingservice.movies.entity.Performance;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class PerformanceMapper {
+@Mapper(componentModel = "spring")
+public interface PerformanceMapper {
 
-    public PerformanceDto toDto(Performance performance) {
-        if (performance == null) return null;
+    @Mapping(source = "actor.id", target = "actorId")
+    @Mapping(source = "movie.id", target = "movieId")
+    PerformanceDto toDto(Performance performance);
 
-        PerformanceDto dto = new PerformanceDto();
-        dto.setId(performance.getId());
-        dto.setCharacterName(performance.getCharacterName());
-        dto.setDescription(performance.getDescription());
-
-        if (performance.getActor() != null) {
-            dto.setActorId(performance.getActor().getId());
-        }
-        if (performance.getMovie() != null) {
-            dto.setMovieId(performance.getMovie().getId());
-        }
-
-        return dto;
-    }
-
-    public Performance toEntity(PerformanceDto dto) {
-        if (dto == null) return null;
-
-        Performance performance = new Performance();
-        performance.setCharacterName(dto.getCharacterName());
-        performance.setDescription(dto.getDescription());
-        return performance;
-    }
+    @Mapping(target = "actor", ignore = true)
+    @Mapping(target = "movie", ignore = true)
+    Performance toEntity(PerformanceDto performanceDto);
 }

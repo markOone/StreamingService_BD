@@ -1,4 +1,4 @@
-﻿package dev.studentpp1.streamingservice.movies.controller;
+package dev.studentpp1.streamingservice.movies.controller;
 
 import dev.studentpp1.streamingservice.movies.dto.DirectorDto;
 import dev.studentpp1.streamingservice.movies.service.DirectorService;
