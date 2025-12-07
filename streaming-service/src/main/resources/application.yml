@@ -1,0 +1,23 @@
+spring:
+  flyway:
+    enabled: true
+    default-schema: public
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+
+server:
+  port: 8081
+
+app:
+  payment:
+    webhook:
+      key: ${STRIPE_WEBHOOK_KEY}
+    url:
+      success: http://localhost:8081/payment/success
+      cancel: http://localhost:8081/payment/cancel
+    key:
+      secret: ${STRIPE_SECRET_KEY}
+      public: ${STRIPE_PUBLIC_KEY}
