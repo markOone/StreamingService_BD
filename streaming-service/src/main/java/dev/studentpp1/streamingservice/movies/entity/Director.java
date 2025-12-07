@@ -1,4 +1,4 @@
-﻿package dev.studentpp1.streamingservice.movies.entity;
+package dev.studentpp1.streamingservice.movies.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

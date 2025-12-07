@@ -1,12 +1,10 @@
-﻿package dev.studentpp1.streamingservice.movies.entity;
+package dev.studentpp1.streamingservice.movies.entity;
 
 import jakarta.persistence.*;
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import java.util.List;
 
 @Entity
 @Table(name = "movie")
@@ -29,8 +27,5 @@ public class Movie {
     private Director director;
 
     @OneToMany(mappedBy = "movie")
-    @JsonIgnore
     private List<Performance> performances;
-    
-
 }
