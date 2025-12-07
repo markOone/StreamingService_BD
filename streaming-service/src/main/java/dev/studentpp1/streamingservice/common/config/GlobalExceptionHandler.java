@@ -1,6 +1,8 @@
 package dev.studentpp1.streamingservice.common.config;
 
 import dev.studentpp1.streamingservice.common.dto.ErrorResponse;
+import dev.studentpp1.streamingservice.subscription.exception.SubscriptionNotFoundException;
+import dev.studentpp1.streamingservice.subscription.exception.SubscriptionPlanNotFoundException;
 import dev.studentpp1.streamingservice.users.exception.UserAlreadyExistsException;
 import dev.studentpp1.streamingservice.users.exception.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +36,15 @@ public class GlobalExceptionHandler {
     ) {
         return buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
     }
+
+    @ExceptionHandler({SubscriptionNotFoundException.class, SubscriptionPlanNotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleSubscriptionNotFound(
+        RuntimeException ex,
+        HttpServletRequest request
+    ) {
+        return buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
+    }
+
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentials(
