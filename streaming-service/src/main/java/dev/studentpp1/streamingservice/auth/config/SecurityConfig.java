@@ -24,7 +24,8 @@ public class SecurityConfig {
             "/api/subscription/plans",
             "/api/movie/{movie_id}",
             "/api/movie/actor/{actor_id}",
-            "/api/movie/director/{director_id}"
+            "/api/movie/director/{director_id}",
+            "/api/payments/webhook"
     };
 
     // one AuthenticationManager for one filter chain

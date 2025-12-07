@@ -1,6 +1,22 @@
-version: '3.8'
-
 services:
+  app:
+    image: app
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      APP_PAYMENT_KEY_SECRET: ${STRIPE_SECRET_KEY}
+      APP_PAYMENT_KEY_PUBLIC: ${STRIPE_PUBLIC_KEY}
+      APP_PAYMENT_WEBHOOK_KEY: ${STRIPE_WEBHOOK_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    networks:
+      - db-network
 
   postgres:
     image: postgres:16
