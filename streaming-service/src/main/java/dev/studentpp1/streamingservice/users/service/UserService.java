@@ -52,7 +52,13 @@ public class UserService {
 
     public AppUser findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException("User with " + email + " not found")
+                () -> new UsernameNotFoundException("User with email " + email + " not found")
+        );
+    }
+
+    public AppUser findById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException("User with id " + userId + " not found")
         );
     }
 }

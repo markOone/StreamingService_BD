@@ -3,6 +3,8 @@ package dev.studentpp1.streamingservice.payments.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLOrdinalEnumJdbcType;
 
 import java.time.LocalDate;
 
@@ -27,8 +29,8 @@ public class Payment {
     @Column(nullable = false)
     private Integer amount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "payment_status")
+    @JdbcType(PostgreSQLOrdinalEnumJdbcType.class)
+    @Column(nullable = false)
     private PaymentStatus status;
 
     @Column(name = "user_subscription_id")

@@ -16,7 +16,7 @@ public class SubscriptionPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subscription_plan_id")
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String name;

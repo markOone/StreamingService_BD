@@ -25,7 +25,7 @@ public class SubscriptionPlanService {
             .toList();
     }
 
-    public SubscriptionPlanDto getPlanById(Integer id) {
+    public SubscriptionPlanDto getPlanById(Long id) {
         return subscriptionPlanRepository.findById(id)
             .map(subscriptionPlanMapper::toDto)
             .orElseThrow(() -> new SubscriptionPlanNotFoundException(
@@ -40,7 +40,7 @@ public class SubscriptionPlanService {
     }
 
     @Transactional
-    public SubscriptionPlanDto updatePlan(Integer id, CreateSubscriptionPlanRequest request) {
+    public SubscriptionPlanDto updatePlan(Long id, CreateSubscriptionPlanRequest request) {
         SubscriptionPlan plan = subscriptionPlanRepository.findById(id)
             .orElseThrow(() -> new SubscriptionPlanNotFoundException(
                 "Subscription Plan not found with id " + id));
@@ -55,7 +55,7 @@ public class SubscriptionPlanService {
     }
 
     @Transactional
-    public void deletePlan(Integer id) {
+    public void deletePlan(Long id) {
         if (!subscriptionPlanRepository.existsById(id)) {
             throw new SubscriptionPlanNotFoundException(
                 "Subscription Plan not found with id " + id);

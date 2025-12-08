@@ -4,6 +4,8 @@ import dev.studentpp1.streamingservice.users.entity.AppUser;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLOrdinalEnumJdbcType;
 
 @Getter
 @Setter
@@ -17,7 +19,7 @@ public class UserSubscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_subscription_id")
-    private Integer id;
+    private Long id;
 
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
@@ -25,8 +27,8 @@ public class UserSubscription {
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @JdbcType(PostgreSQLOrdinalEnumJdbcType.class)
     private SubscriptionStatus status;
 
     @ManyToOne(optional = false)

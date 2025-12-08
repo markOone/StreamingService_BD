@@ -24,7 +24,7 @@ public class SubscriptionPlanController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SubscriptionPlanDto> getPlanById(@PathVariable Integer id) {
+    public ResponseEntity<SubscriptionPlanDto> getPlanById(@PathVariable Long id) {
         return ResponseEntity.ok(subscriptionPlanService.getPlanById(id));
     }
 
@@ -37,14 +37,14 @@ public class SubscriptionPlanController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SubscriptionPlanDto> updatePlan(
-            @PathVariable Integer id,
+            @PathVariable Long id,
             @Valid @RequestBody CreateSubscriptionPlanRequest request) {
         return ResponseEntity.ok(subscriptionPlanService.updatePlan(id, request));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deletePlan(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletePlan(@PathVariable Long id) {
         subscriptionPlanService.deletePlan(id);
         return ResponseEntity.noContent().build();
     }
