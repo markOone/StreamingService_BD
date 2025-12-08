@@ -11,12 +11,15 @@ import dev.studentpp1.streamingservice.auth.persistence.AuthenticatedUser;
 import dev.studentpp1.streamingservice.payments.dto.PaymentRequest;
 import dev.studentpp1.streamingservice.payments.dto.PaymentResponse;
 import dev.studentpp1.streamingservice.payments.entity.PaymentStatus;
+import dev.studentpp1.streamingservice.subscription.entity.SubscriptionPlan;
+import dev.studentpp1.streamingservice.subscription.service.SubscriptionPlanUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -25,11 +28,12 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class PaymentService {
     public static final String SESSION_CREATED = "Payment session created";
+    public static final String USER_ID = "userId";
+    public static final String PLAN_NAME = "planName";
+    public static final long QUANTITY = 1L;
+
     @Value("${app.payment.key.secret}")
     private String secretKey;
-
-    @Value("${app.payment.key.public}")
-    private String publicKey;
 
     @Value("${app.payment.url.success}")
     private String successUrl;
@@ -37,32 +41,46 @@ public class PaymentService {
     @Value("${app.payment.url.cancel}")
     private String cancelUrl;
 
+    @Value("${app.payment.currency}")
+    private String currency;
+
+    private final SubscriptionPlanUtils subscriptionPlanUtils;
+
     @PostConstruct
     public void connectToStripe() {
         Stripe.apiKey = secretKey;
     }
-    // TODO: request -> must be subscription
+
     // stripe API call
     // Input: productName, amount, quantity, currency
     // Output: sessionId, url (complete payment process)
+    @Transactional
     public PaymentResponse checkoutProduct(PaymentRequest request) {
+        SubscriptionPlan subscriptionPlan = subscriptionPlanUtils.findById(request.id());
+        return getSubscriptionPayment(subscriptionPlan);
+    }
+
+    public PaymentResponse checkoutProduct(SubscriptionPlan subscriptionPlan) {
+        return getSubscriptionPayment(subscriptionPlan);
+    }
+
+    private PaymentResponse getSubscriptionPayment(SubscriptionPlan subscriptionPlan) {
         AuthenticatedUser user = (AuthenticatedUser) Objects.requireNonNull(SecurityContextHolder
                         .getContext()
                         .getAuthentication())
                 .getPrincipal();
         assert user != null;
         Long userId = user.getAppUser().getId();
-        String planName = request.productName();
         ProductData productData = ProductData.builder()
-                .setName(planName)
+                .setName(subscriptionPlan.getName())
                 .build();
         PriceData priceData = PriceData.builder()
-                .setCurrency(request.currency() == null ? "uah" : request.currency())
-                .setUnitAmount(request.amount())
+                .setCurrency(currency)
+                .setUnitAmount(subscriptionPlan.getPrice().longValue())
                 .setProductData(productData)
                 .build();
         LineItem lineItem = LineItem.builder()
-                .setQuantity(request.quantity())
+                .setQuantity(QUANTITY)
                 .setPriceData(priceData)
                 .build();
         SessionCreateParams params = SessionCreateParams.builder()
@@ -73,8 +91,8 @@ public class PaymentService {
                 .setClientReferenceId(userId.toString())
                 .setPaymentIntentData(
                         SessionCreateParams.PaymentIntentData.builder()
-                                .putMetadata("userId", userId.toString())
-                                .putMetadata("planName", planName)
+                                .putMetadata(USER_ID, userId.toString())
+                                .putMetadata(PLAN_NAME, subscriptionPlan.getName())
                                 .build()
                 )
                 .build();
@@ -91,5 +109,4 @@ public class PaymentService {
             throw new RuntimeException(e);
         }
     }
-
 }

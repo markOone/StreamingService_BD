@@ -1,6 +1,6 @@
 package dev.studentpp1.streamingservice.subscription.entity;
 
-import dev.studentpp1.streamingservice.movie.entity.Movie;
+import dev.studentpp1.streamingservice.movies.entity.Movie;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import lombok.*;
@@ -35,9 +35,9 @@ public class IncludedMovie {
     @EqualsAndHashCode
     public static class IncludedMovieId implements Serializable {
         @Column(name = "movie_id")
-        private Integer movieId;
+        private Long movieId;
 
         @Column(name = "subscription_plan_id")
-        private Integer subscriptionPlanId;
+        private Long subscriptionPlanId;
     }
 }

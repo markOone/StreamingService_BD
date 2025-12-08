@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   flyway:
     enabled: true
     default-schema: public
@@ -13,11 +15,12 @@ server:
 
 app:
   payment:
+    currency: usd
     webhook:
       key: ${STRIPE_WEBHOOK_KEY}
     url:
-      success: http://localhost:8081/payment/success
-      cancel: http://localhost:8081/payment/cancel
+      success: http://localhost:3000/payment/success
+      cancel: http://localhost:3000/payment/cancel
     key:
       secret: ${STRIPE_SECRET_KEY}
       public: ${STRIPE_PUBLIC_KEY}

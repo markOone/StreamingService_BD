@@ -8,7 +8,5 @@ public record UserSubscriptionDto(
         LocalDateTime startTime,
         LocalDateTime endTime,
         SubscriptionStatus status,
-        Integer planId,
-        String planName,
-        Long userId) {
+        String planName) {
 }
