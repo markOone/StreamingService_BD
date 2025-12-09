@@ -26,7 +26,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     // these endpoints in white list -> security we do by hand (the same flow as in spring)
-    public void register(RegisterUserRequest request, HttpServletRequest httpServletRequest) {
+    public void register(RegisterUserRequest request, HttpServletRequest httpServletRequest) throws Exception {
         AppUser appUser = userService.createUser(request);
         UserDetails userDetails = new AuthenticatedUser(appUser);
         Authentication authentication = new UsernamePasswordAuthenticationToken(
