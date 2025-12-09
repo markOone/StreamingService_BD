@@ -1,5 +1,14 @@
 package dev.studentpp1.streamingservice.users.service;
 
+import java.security.Principal;
+import java.util.Objects;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import dev.studentpp1.streamingservice.auth.persistence.AuthenticatedUser;
 import dev.studentpp1.streamingservice.auth.persistence.Role;
 import dev.studentpp1.streamingservice.users.dto.RegisterUserRequest;
@@ -11,14 +20,6 @@ import dev.studentpp1.streamingservice.users.mapper.UserDtoMapper;
 import dev.studentpp1.streamingservice.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.security.Principal;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -29,13 +30,15 @@ public class UserService {
     private final UpdateUserMapper updateUserMapper;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public AppUser createUser(RegisterUserRequest request) {
-        if (userRepository.findByEmail(request.email()).isPresent()) {
+        if (userRepository.findByEmailAndDeletedFalse(request.email()).isPresent()) {
             throw new UserAlreadyExistsException("User with email " + request.email() + " already exists");
         }
         AppUser user = userDtoMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.password()));
-        user.setRole(Role.USER);
+        user.setRole(Role.ROLE_USER);
+        user.setDeleted(false);
         return userRepository.save(user);
     }
 
@@ -53,7 +56,7 @@ public class UserService {
     }
 
     public AppUser findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
+        return userRepository.findByEmailAndDeletedFalse(email).orElseThrow(
                 () -> new UsernameNotFoundException("User with email " + email + " not found")
         );
     }
@@ -62,5 +65,11 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(
                 () -> new UsernameNotFoundException("User with id " + userId + " not found")
         );
+    }
+
+    public void deleteUserById(Long id) {
+        AppUser appUser = findById(id);
+        appUser.setDeleted(true);
+        userRepository.save(appUser);
     }
 }

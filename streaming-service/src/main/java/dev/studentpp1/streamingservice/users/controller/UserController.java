@@ -7,6 +7,7 @@ import dev.studentpp1.streamingservice.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -28,5 +29,13 @@ public class UserController {
     public ResponseEntity<UserDto> getInfo(Principal principal) {
         UserDto userDto = userDtoMapper.toUserDto(userService.getInfo(principal));
         return ResponseEntity.ok(userDto);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+        userService.deleteUserById(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+
     }
 }
