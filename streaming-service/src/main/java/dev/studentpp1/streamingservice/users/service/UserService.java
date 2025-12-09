@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.Objects;
@@ -38,12 +39,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public AppUser updateUser(UpdateUserRequest request) {
         Object principal = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         assert principal != null;
         AppUser appUser = ((AuthenticatedUser) principal).getAppUser();
         updateUserMapper.updateFromDto(request, appUser);
-        return userRepository.save(appUser);
+        return userRepository.save(appUser); // find by id -> update
     }
 
     public AppUser getInfo(Principal principal) {

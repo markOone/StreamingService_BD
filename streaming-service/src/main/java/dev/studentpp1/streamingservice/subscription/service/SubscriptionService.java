@@ -35,7 +35,8 @@ public class SubscriptionService {
         return paymentService.checkoutProduct(plan);
     }
 
-    public UserSubscriptionDto createUserSubscription(String planName, String userId) {
+    @Transactional
+    public UserSubscription createUserSubscription(String planName, String userId) {
         SubscriptionPlan plan = subscriptionPlanUtils.findByName(planName);
         AppUser user = userService.findById(Long.parseLong(userId));
         UserSubscription subscription = new UserSubscription();
@@ -44,10 +45,10 @@ public class SubscriptionService {
         subscription.setStartTime(LocalDateTime.now());
         subscription.setEndTime(LocalDateTime.now().plusDays(plan.getDuration()));
         subscription.setStatus(SubscriptionStatus.ACTIVE);
-        UserSubscription savedSubscription = userSubscriptionRepository.save(subscription);
-        return userSubscriptionMapper.toDto(savedSubscription);
+        return userSubscriptionRepository.save(subscription);
     }
 
+    @Transactional
     public List<UserSubscriptionDto> getUserSubscriptions(Long userId) {
         AppUser user = userService.findById(userId);
         return userSubscriptionRepository.findByUser(user)
