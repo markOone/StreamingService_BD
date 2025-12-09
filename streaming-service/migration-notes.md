@@ -127,13 +127,16 @@ ALTER TABLE payment
 Для перевірки цілісності даних після всіх міграцій було використано скрипт [`verify_lab6.sql`](scripts/verify_lab6.sql)
 
 + Перевірка поля phone
-![phone_check.png](images/phone_check.png)
+
+    ![phone_check.png](images/phone_check.png)
 
 + Перевірка зв'язків review
-![review_relationship.png](images/review_relationship.png)
+
+    ![review_relationship.png](images/review_relationship.png)
 
 + Перевірка таблиці payment
-![new_payment.png](images/new_payment.png)
+
+    ![new_payment.png](images/new_payment.png)
 
 ### Flyway schema migration history
 > Після виконання всіх міграцій, можемо перевірити, що flyway коректно записав історію змін:
@@ -143,7 +146,7 @@ ALTER TABLE payment
 1	1	init schema	        SQL	V1__init_schema.sql	       -2020293762	postgres	2025-12-09 13:07:04.493448	79	true
 2	2	add review table	SQL	V2__add_review_table.sql	1674867660	postgres	2025-12-09 13:07:04.610111	14	true
 3	3	add phone number	SQL	V3__add_phone_number.sql	-1986101535	postgres	2025-12-09 13:07:04.647876	8	true
-4	4	delete paid at	        SQL	V4__delete_paid_at.sql	        1419233768	postgres	2025-12-09 13:07:04.672831	6	true
+4	4	delete paid at	    SQL	V4__delete_paid_at.sql	     1419233768	postgres	2025-12-09 13:07:04.672831	6	true
 5	5	rename user table	SQL	V5__rename_user_table.sql	825085019	postgres	2025-12-09 13:07:04.696053	6	true
 6	6	delete relationship	SQL	V6__delete_relationship.sql	-290981968	postgres	2025-12-09 13:07:04.716304	5	true
 ```
