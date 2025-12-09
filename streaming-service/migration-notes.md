@@ -134,3 +134,21 @@ ALTER TABLE payment
 
 + Перевірка таблиці payment
 ![new_payment.png](images/new_payment.png)
+
+### Flyway schema migration history
+> Після виконання всіх міграцій, можемо перевірити, що flyway коректно записав історію змін:
+
+![flyway_history.png](images/flyway_history.png)
+```
+1	1	init schema	        SQL	V1__init_schema.sql	       -2020293762	postgres	2025-12-09 13:07:04.493448	79	true
+2	2	add review table	SQL	V2__add_review_table.sql	1674867660	postgres	2025-12-09 13:07:04.610111	14	true
+3	3	add phone number	SQL	V3__add_phone_number.sql	-1986101535	postgres	2025-12-09 13:07:04.647876	8	true
+4	4	delete paid at	        SQL	V4__delete_paid_at.sql	        1419233768	postgres	2025-12-09 13:07:04.672831	6	true
+5	5	rename user table	SQL	V5__rename_user_table.sql	825085019	postgres	2025-12-09 13:07:04.696053	6	true
+6	6	delete relationship	SQL	V6__delete_relationship.sql	-290981968	postgres	2025-12-09 13:07:04.716304	5	true
+```
+
+> Як видно з таблиці історії міграцій, усі скрипти були виконані успішно
+під користувачем `postgres`, із збереженням версії, опису, контрольної суми та часу виконання.
+Це гарантує відтворюваність схеми бази даних і дозволяє розгортати однакову структуру БД
+на різних середовищах.
