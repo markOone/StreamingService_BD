@@ -8,19 +8,25 @@ import com.stripe.param.checkout.SessionCreateParams.LineItem;
 import com.stripe.param.checkout.SessionCreateParams.LineItem.PriceData;
 import com.stripe.param.checkout.SessionCreateParams.LineItem.PriceData.ProductData;
 import dev.studentpp1.streamingservice.auth.persistence.AuthenticatedUser;
+import dev.studentpp1.streamingservice.payments.dto.HistoryPaymentResponse;
 import dev.studentpp1.streamingservice.payments.dto.PaymentRequest;
 import dev.studentpp1.streamingservice.payments.dto.PaymentResponse;
 import dev.studentpp1.streamingservice.payments.entity.PaymentStatus;
+import dev.studentpp1.streamingservice.payments.repository.PaymentRepository;
 import dev.studentpp1.streamingservice.subscription.entity.SubscriptionPlan;
 import dev.studentpp1.streamingservice.subscription.service.SubscriptionPlanUtils;
+import dev.studentpp1.streamingservice.users.entity.AppUser;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -45,6 +51,7 @@ public class PaymentService {
     private String currency;
 
     private final SubscriptionPlanUtils subscriptionPlanUtils;
+    private final PaymentRepository paymentRepository;
 
     @PostConstruct
     public void connectToStripe() {
@@ -65,12 +72,7 @@ public class PaymentService {
     }
 
     private PaymentResponse getSubscriptionPayment(SubscriptionPlan subscriptionPlan) {
-        AuthenticatedUser user = (AuthenticatedUser) Objects.requireNonNull(SecurityContextHolder
-                        .getContext()
-                        .getAuthentication())
-                .getPrincipal();
-        assert user != null;
-        Long userId = user.getAppUser().getId();
+        Long userId = getAuthenticatedUserId();
         ProductData productData = ProductData.builder()
                 .setName(subscriptionPlan.getName())
                 .build();
@@ -109,4 +111,32 @@ public class PaymentService {
             throw new RuntimeException(e);
         }
     }
+
+    private static Long getAuthenticatedUserId() {
+        AppUser appUser = ((AuthenticatedUser) Objects.requireNonNull(
+                Objects.requireNonNull(SecurityContextHolder
+                                .getContext()
+                                .getAuthentication()
+                        )
+                        .getPrincipal())
+        ).getAppUser();
+        assert appUser != null;
+        return appUser.getId();
+    }
+
+    public List<HistoryPaymentResponse> getUserPayments() {
+        return paymentRepository.getPaymentByUserId(getAuthenticatedUserId());
+    }
+
+    public List<HistoryPaymentResponse> getPaymentsByUserSubscription(Long userSubscriptionId) {
+        return paymentRepository.getPaymentByUserSubscription(userSubscriptionId);
+    }
+
+    @Scheduled(cron = "0 0 3 * * *")
+    public void deleteOldPayments() {
+        LocalDateTime lastYear = LocalDateTime.now().minusYears(1);
+        int deleted = paymentRepository.deletePaymentsBefore(lastYear);
+        log.info("Deleted {} old payments older than {}", deleted, lastYear);
+    }
+
 }
