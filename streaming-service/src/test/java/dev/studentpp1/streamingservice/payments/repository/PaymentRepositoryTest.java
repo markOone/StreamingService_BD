@@ -181,7 +181,7 @@ class PaymentRepositoryTest extends AbstractPostgresContainerTest {
 
     @Test
     void getPaymentByUserId_returnsAllPaymentsForUser() {
-        List<HistoryPaymentResponse> historyPayments = paymentRepository.getPaymentByUserId(1L);
+        List<HistoryPaymentResponse> historyPayments = paymentRepository.getPaymentByUserId(2L);
         assertThat(historyPayments).size().isEqualTo(1);
         HistoryPaymentResponse paymentResponse = historyPayments.getFirst();
         assertThat(paymentResponse.status()).isEqualTo(PaymentStatus.COMPLETED);

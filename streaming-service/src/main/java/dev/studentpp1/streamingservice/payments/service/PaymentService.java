@@ -138,5 +138,4 @@ public class PaymentService {
         int deleted = paymentRepository.deletePaymentsBefore(lastYear);
         log.info("Deleted {} old payments older than {}", deleted, lastYear);
     }
-
 }

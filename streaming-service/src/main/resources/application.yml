@@ -9,6 +9,8 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     url: jdbc:postgresql://localhost:5432/${DB_NAME}
+  jpa:
+    open-in-view: false
 
 server:
   port: 8081
