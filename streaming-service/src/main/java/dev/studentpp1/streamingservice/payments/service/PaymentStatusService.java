@@ -25,6 +25,7 @@ public class PaymentStatusService {
     public static final String CURRENCY = "currency";
 
     private final SubscriptionService subscriptionService;
+
     private final PaymentRepository paymentRepository;
 
     public void handlePaymentEvent(Event event) {

@@ -3,7 +3,6 @@ package dev.studentpp1.streamingservice.payments.entity;
 import dev.studentpp1.streamingservice.subscription.entity.UserSubscription;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.type.PostgreSQLOrdinalEnumJdbcType;
 
@@ -23,9 +22,9 @@ public class Payment {
     @Column(name = "payment_id")
     private Long id;
 
-    @CreationTimestamp
+    @Builder.Default
     @Column(name = "paid_at", updatable = false)
-    private LocalDateTime paidAt;
+    private LocalDateTime paidAt = LocalDateTime.now();
 
     @Column(nullable = false)
     private Integer amount;
