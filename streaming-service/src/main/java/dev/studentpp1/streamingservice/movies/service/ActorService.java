@@ -7,9 +7,6 @@ import dev.studentpp1.streamingservice.movies.mapper.ActorMapper;
 import dev.studentpp1.streamingservice.movies.repository.ActorRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class ActorService {
 

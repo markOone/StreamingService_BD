@@ -1,6 +1,7 @@
 package dev.studentpp1.streamingservice.movies.service;
 
 import dev.studentpp1.streamingservice.movies.dto.PerformanceDto;
+import dev.studentpp1.streamingservice.movies.dto.PerformanceRequest;
 import dev.studentpp1.streamingservice.movies.entity.Actor;
 import dev.studentpp1.streamingservice.movies.entity.Movie;
 import dev.studentpp1.streamingservice.movies.entity.Performance;
@@ -9,9 +10,6 @@ import dev.studentpp1.streamingservice.movies.repository.ActorRepository;
 import dev.studentpp1.streamingservice.movies.repository.MovieRepository;
 import dev.studentpp1.streamingservice.movies.repository.PerformanceRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PerformanceService {
@@ -31,26 +29,20 @@ public class PerformanceService {
         this.performanceMapper = performanceMapper;
     }
 
-    public List<PerformanceDto> getAllPerformances() {
-        return performanceRepository.findAll().stream()
-                .map(performanceMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
     public PerformanceDto getPerformanceById(Long id) {
         Performance performance = performanceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Performance not found with id: " + id));
         return performanceMapper.toDto(performance);
     }
 
-    public PerformanceDto createPerformance(PerformanceDto dto) {
-        Actor actor = actorRepository.findById(dto.getActorId())
-                .orElseThrow(() -> new RuntimeException("Actor not found with id: " + dto.getActorId()));
+    public PerformanceDto createPerformance(PerformanceRequest request) {
+        Actor actor = actorRepository.findById(request.actorId())
+                .orElseThrow(() -> new RuntimeException("Actor not found with id: " + request.actorId()));
 
-        Movie movie = movieRepository.findById(dto.getMovieId())
-                .orElseThrow(() -> new RuntimeException("Movie not found with id: " + dto.getMovieId()));
+        Movie movie = movieRepository.findById(request.movieId())
+                .orElseThrow(() -> new RuntimeException("Movie not found with id: " + request.movieId()));
 
-        Performance performance = performanceMapper.toEntity(dto);
+        Performance performance = performanceMapper.toEntity(request);
         performance.setActor(actor);
         performance.setMovie(movie);
 
@@ -59,7 +51,7 @@ public class PerformanceService {
 
     public void deletePerformance(Long id) {
         if (!performanceRepository.existsById(id)) {
-            throw new RuntimeException("Performance not found");
+            throw new RuntimeException("Performance not found with id: " + id);
         }
         performanceRepository.deleteById(id);
     }

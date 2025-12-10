@@ -1,7 +1,9 @@
 package dev.studentpp1.streamingservice.movies.controller;
 
 import dev.studentpp1.streamingservice.movies.dto.DirectorDto;
+import dev.studentpp1.streamingservice.movies.dto.DirectorRequest;
 import dev.studentpp1.streamingservice.movies.service.DirectorService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,24 +20,19 @@ public class DirectorController {
         this.directorService = directorService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<DirectorDto>> getAllDirectors() {
-        return ResponseEntity.ok(directorService.getAllDirectors());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<DirectorDto> getDirectorById(@PathVariable Long id) {
         return ResponseEntity.ok(directorService.getDirectorById(id));
     }
 
     @PostMapping
-    public ResponseEntity<DirectorDto> createDirector(@RequestBody DirectorDto dto) {
-        return new ResponseEntity<>(directorService.createDirector(dto), HttpStatus.CREATED);
+    public ResponseEntity<DirectorDto> createDirector(@RequestBody @Valid DirectorRequest request) {
+        return new ResponseEntity<>(directorService.createDirector(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DirectorDto> updateDirector(@PathVariable Long id, @RequestBody DirectorDto dto) {
-        return ResponseEntity.ok(directorService.updateDirector(id, dto));
+    public ResponseEntity<DirectorDto> updateDirector(@PathVariable Long id, @RequestBody @Valid DirectorRequest request) {
+        return ResponseEntity.ok(directorService.updateDirector(id, request));
     }
 
     @DeleteMapping("/{id}")
