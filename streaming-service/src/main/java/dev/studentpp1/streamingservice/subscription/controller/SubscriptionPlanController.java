@@ -1,7 +1,8 @@
 package dev.studentpp1.streamingservice.subscription.controller;
 
 import dev.studentpp1.streamingservice.subscription.dto.CreateSubscriptionPlanRequest;
-import dev.studentpp1.streamingservice.subscription.dto.SubscriptionPlanDto;
+import dev.studentpp1.streamingservice.subscription.dto.SubscriptionPlanDetailsDto;
+import dev.studentpp1.streamingservice.subscription.dto.SubscriptionPlanSummaryDto;
 import dev.studentpp1.streamingservice.subscription.service.SubscriptionPlanService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -19,33 +20,57 @@ public class SubscriptionPlanController {
     private final SubscriptionPlanService subscriptionPlanService;
 
     @GetMapping
-    public ResponseEntity<List<SubscriptionPlanDto>> getAllPlans() {
+    public ResponseEntity<List<SubscriptionPlanSummaryDto>> getAllPlans() {
         return ResponseEntity.ok(subscriptionPlanService.getAllPlans());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SubscriptionPlanDto> getPlanById(@PathVariable Long id) {
+    public ResponseEntity<SubscriptionPlanDetailsDto> getPlanById(@PathVariable Long id) {
         return ResponseEntity.ok(subscriptionPlanService.getPlanById(id));
     }
 
     @PostMapping
-    public ResponseEntity<SubscriptionPlanDto> createPlan(@Valid @RequestBody CreateSubscriptionPlanRequest request) {
-        SubscriptionPlanDto createdPlan = subscriptionPlanService.createPlan(request);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<SubscriptionPlanSummaryDto> createPlan(
+        @Valid @RequestBody CreateSubscriptionPlanRequest request) {
+
+        SubscriptionPlanSummaryDto createdPlan = subscriptionPlanService.createPlan(request);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPlan);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<SubscriptionPlanDto> updatePlan(
-            @PathVariable Long id,
-            @Valid @RequestBody CreateSubscriptionPlanRequest request) {
-        return ResponseEntity.ok(subscriptionPlanService.updatePlan(id, request));
+    public ResponseEntity<SubscriptionPlanSummaryDto> updatePlan(
+        @PathVariable("id") Long planId,
+        @Valid @RequestBody CreateSubscriptionPlanRequest request) {
+
+        return ResponseEntity.ok(subscriptionPlanService.updatePlan(planId, request));
+    }
+
+    @PostMapping("/{id}/movies")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity addMoviesToPlan(
+        @PathVariable("id") Long planId,
+        @RequestBody List<Long> movieIds) {
+
+        return ResponseEntity.ok(subscriptionPlanService.addMoviesToPlan(planId, movieIds));
+    }
+
+    @DeleteMapping("/{id}/movies")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<SubscriptionPlanSummaryDto> removeMoviesFromPlan(
+        @PathVariable("id") Long planId,
+        @RequestBody List<Long> movieIds) {
+
+        return ResponseEntity.ok(subscriptionPlanService.removeMoviesFromPlan(planId, movieIds));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletePlan(@PathVariable Long id) {
-        subscriptionPlanService.deletePlan(id);
+        subscriptionPlanService.deletePlan(id); // soft
+
         return ResponseEntity.noContent().build();
     }
 }
