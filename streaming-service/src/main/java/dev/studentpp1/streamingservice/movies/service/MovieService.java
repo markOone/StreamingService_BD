@@ -1,6 +1,7 @@
 package dev.studentpp1.streamingservice.movies.service;
 
 import dev.studentpp1.streamingservice.movies.dto.MovieDto;
+import dev.studentpp1.streamingservice.movies.dto.MovieRequest;
 import dev.studentpp1.streamingservice.movies.entity.Director;
 import dev.studentpp1.streamingservice.movies.entity.Movie;
 import dev.studentpp1.streamingservice.movies.mapper.MovieMapper;
@@ -9,7 +10,6 @@ import dev.studentpp1.streamingservice.movies.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
@@ -25,9 +25,7 @@ public class MovieService {
     }
 
     public List<MovieDto> getAllMovies() {
-        return movieRepository.findAll().stream()
-                .map(movieMapper::toDto)
-                .collect(Collectors.toList());
+        return movieMapper.toDtoList(movieRepository.findAll());
     }
 
     public MovieDto getMovieById(Long id) {
@@ -36,15 +34,14 @@ public class MovieService {
         return movieMapper.toDto(movie);
     }
 
-    public MovieDto createMovie(MovieDto dto) {
-        Director director = directorRepository.findById(dto.getDirectorId())
-                .orElseThrow(() -> new RuntimeException("Director not found with id: " + dto.getDirectorId()));
+    public MovieDto createMovie(MovieRequest request) {
+        Director director = directorRepository.findById(request.directorId())
+                .orElseThrow(() -> new RuntimeException("Director not found with id: " + request.directorId()));
 
-        Movie movie = movieMapper.toEntity(dto);
-
+        Movie movie = movieMapper.toEntity(request);
         movie.setDirector(director);
 
-        if (movie.getYear() <= 1880) {
+        if (movie.getYear() != null && movie.getYear() <= 1880) {
             throw new RuntimeException("Movie year must be greater than 1880");
         }
 
@@ -52,20 +49,17 @@ public class MovieService {
         return movieMapper.toDto(savedMovie);
     }
 
-    public MovieDto updateMovie(Long id, MovieDto dto) {
+    public MovieDto updateMovie(Long id, MovieRequest request) {
         Movie existingMovie = movieRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Movie not found with id: " + id));
 
-        if (dto.getDirectorId() != null) {
-            Director director = directorRepository.findById(dto.getDirectorId())
-                    .orElseThrow(() -> new RuntimeException("Director not found with id: " + dto.getDirectorId()));
+        movieMapper.updateMovieFromRequest(request, existingMovie);
+
+        if (request.directorId() != null) {
+            Director director = directorRepository.findById(request.directorId())
+                    .orElseThrow(() -> new RuntimeException("Director not found with id: " + request.directorId()));
             existingMovie.setDirector(director);
         }
-
-        existingMovie.setTitle(dto.getTitle());
-        existingMovie.setDescription(dto.getDescription());
-        existingMovie.setYear(dto.getYear());
-        existingMovie.setRating(dto.getRating());
 
         return movieMapper.toDto(movieRepository.save(existingMovie));
     }

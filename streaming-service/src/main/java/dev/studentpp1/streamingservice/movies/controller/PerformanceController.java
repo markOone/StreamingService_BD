@@ -1,12 +1,12 @@
 package dev.studentpp1.streamingservice.movies.controller;
 
 import dev.studentpp1.streamingservice.movies.dto.PerformanceDto;
+import dev.studentpp1.streamingservice.movies.dto.PerformanceRequest;
 import dev.studentpp1.streamingservice.movies.service.PerformanceService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/performances")
@@ -18,19 +18,14 @@ public class PerformanceController {
         this.performanceService = performanceService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<PerformanceDto>> getAllPerformances() {
-        return ResponseEntity.ok(performanceService.getAllPerformances());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<PerformanceDto> getPerformanceById(@PathVariable Long id) {
         return ResponseEntity.ok(performanceService.getPerformanceById(id));
     }
 
     @PostMapping
-    public ResponseEntity<PerformanceDto> createPerformance(@RequestBody PerformanceDto dto) {
-        return new ResponseEntity<>(performanceService.createPerformance(dto), HttpStatus.CREATED);
+    public ResponseEntity<PerformanceDto> createPerformance(@RequestBody @Valid PerformanceRequest request) {
+        return new ResponseEntity<>(performanceService.createPerformance(request), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
