@@ -1,4 +1,4 @@
-﻿package dev.studentpp1.streamingservice.movies.dto;
+package dev.studentpp1.streamingservice.movies.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

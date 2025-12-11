@@ -6,6 +6,9 @@ public record MovieDto (
         String description,
         Integer year,
         Double rating,
-        Long directorId
-){
+        Long directorId,
+        String directorName,
+        String directorSurname
+) {
+
 }
