@@ -1,5 +1,6 @@
 package dev.studentpp1.streamingservice.subscription.controller;
 
+import dev.studentpp1.streamingservice.auth.persistence.AuthenticatedUser;
 import dev.studentpp1.streamingservice.payments.dto.PaymentResponse;
 import dev.studentpp1.streamingservice.subscription.dto.SubscribeRequest;
 import dev.studentpp1.streamingservice.subscription.dto.UserSubscriptionDto;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,20 +21,27 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
-    @PostMapping("/subscribe")
+    @PostMapping
     public ResponseEntity<PaymentResponse> subscribe(@Valid @RequestBody SubscribeRequest request) {
         PaymentResponse paymentResponse = subscriptionService.subscribeUser(request);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(paymentResponse);
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserSubscriptionDto>> getUserSubscriptions(@PathVariable Long userId) {
-        return ResponseEntity.ok(subscriptionService.getUserSubscriptions(userId));
+    @GetMapping
+    public ResponseEntity<List<UserSubscriptionDto>> getMySubscriptions(
+        @AuthenticationPrincipal AuthenticatedUser currentUser
+    ) {
+        return ResponseEntity.ok(subscriptionService.getUserSubscriptions(currentUser));
     }
 
-    @PostMapping("/{id}/cancel")
-    public ResponseEntity<Void> cancelSubscription(@PathVariable Long id) {
-        subscriptionService.cancelSubscription(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelSubscription(
+        @PathVariable("id") Long subscriptionId,
+        @AuthenticationPrincipal AuthenticatedUser currentUser
+    ) {
+        subscriptionService.cancelSubscription(subscriptionId, currentUser);
+
+        return ResponseEntity.noContent().build();
     }
 }
