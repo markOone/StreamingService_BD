@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   flyway:
     enabled: true
     default-schema: public
@@ -7,6 +9,20 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     url: jdbc:postgresql://localhost:5432/${DB_NAME}
+  jpa:
+    open-in-view: false
 
 server:
   port: 8081
+
+app:
+  payment:
+    currency: usd
+    webhook:
+      key: ${STRIPE_WEBHOOK_KEY}
+    url:
+      success: http://localhost:3000/payment/success
+      cancel: http://localhost:3000/payment/cancel
+    key:
+      secret: ${STRIPE_SECRET_KEY}
+      public: ${STRIPE_PUBLIC_KEY}

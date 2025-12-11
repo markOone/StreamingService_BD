@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-
   postgres:
     image: postgres:16
     restart: always
@@ -16,7 +13,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - db-network
-    healthcheck: # check if Postgres is ready to accept connections
+    healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB || exit 1"]
       interval: 10s
       timeout: 5s
@@ -29,7 +26,7 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL}"
       PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD}"
-      PGADMIN_CONFIG_SERVER_MODE: 'False' # disable authentication for demo purposes
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
       - "8080:80"
     volumes:
@@ -40,12 +37,32 @@ services:
     networks:
       - db-network
 
-volumes: # save data of services to local volumes (don't see in system)
+  app:
+    image: app
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      APP_PAYMENT_KEY_SECRET: ${STRIPE_SECRET_KEY}
+      APP_PAYMENT_KEY_PUBLIC: ${STRIPE_PUBLIC_KEY}
+      APP_PAYMENT_WEBHOOK_KEY: ${STRIPE_WEBHOOK_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    networks:
+      - db-network
+    profiles: ["app"]
+
+volumes:
   postgres_data:
     driver: local
   pgadmin_data:
     driver: local
 
-networks: # create a custom network to allow communication between services by name
+networks:
   db-network:
     driver: bridge
