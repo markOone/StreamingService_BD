@@ -6,11 +6,12 @@ import com.stripe.model.Event;
 import dev.studentpp1.streamingservice.payments.entity.Payment;
 import dev.studentpp1.streamingservice.payments.entity.PaymentStatus;
 import dev.studentpp1.streamingservice.payments.repository.PaymentRepository;
-import dev.studentpp1.streamingservice.subscription.dto.UserSubscriptionDto;
+import dev.studentpp1.streamingservice.subscription.entity.UserSubscription;
 import dev.studentpp1.streamingservice.subscription.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -24,6 +25,7 @@ public class PaymentStatusService {
     public static final String CURRENCY = "currency";
 
     private final SubscriptionService subscriptionService;
+
     private final PaymentRepository paymentRepository;
 
     public void handlePaymentEvent(Event event) {
@@ -66,19 +68,20 @@ public class PaymentStatusService {
         }
     }
 
-    private void handlePaymentIntentSucceeded(Event event) {
+    @Transactional
+    protected void handlePaymentIntentSucceeded(Event event) {
         PaymentIntentPayload payload = parsePaymentIntentPayload(event);
         if (payload == null) {
             log.warn("Skipping payment_intent.succeeded due to parse error");
             return;
         }
-        UserSubscriptionDto userSubscription = subscriptionService.createUserSubscription(
+        UserSubscription userSubscription = subscriptionService.createUserSubscription(
                 payload.planName(),
                 payload.userId()
         );
         Payment payment = Payment.builder()
                 .status(PaymentStatus.COMPLETED)
-                .userSubscription(Long.valueOf(userSubscription.id()))
+                .userSubscription(userSubscription)
                 .amount(Math.toIntExact(payload.amount()))
                 .build();
         paymentRepository.save(payment);

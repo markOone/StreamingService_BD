@@ -1,7 +1,9 @@
 package dev.studentpp1.streamingservice.movies.controller;
 
 import dev.studentpp1.streamingservice.movies.dto.MovieDto;
+import dev.studentpp1.streamingservice.movies.dto.MovieRequest;
 import dev.studentpp1.streamingservice.movies.service.MovieService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +31,13 @@ public class MovieController {
     }
 
     @PostMapping
-    public ResponseEntity<MovieDto> createMovie(@RequestBody MovieDto dto) {
-        return new ResponseEntity<>(movieService.createMovie(dto), HttpStatus.CREATED);
+    public ResponseEntity<MovieDto> createMovie(@RequestBody @Valid MovieRequest request) {
+        return new ResponseEntity<>(movieService.createMovie(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MovieDto> updateMovie(@PathVariable Long id, @RequestBody MovieDto dto) {
-        return ResponseEntity.ok(movieService.updateMovie(id, dto));
+    public ResponseEntity<MovieDto> updateMovie(@PathVariable Long id, @RequestBody @Valid MovieRequest request) {
+        return ResponseEntity.ok(movieService.updateMovie(id, request));
     }
 
     @DeleteMapping("/{id}")

@@ -1,13 +1,11 @@
 package dev.studentpp1.streamingservice.movies.service;
 
 import dev.studentpp1.streamingservice.movies.dto.DirectorDto;
+import dev.studentpp1.streamingservice.movies.dto.DirectorRequest;
 import dev.studentpp1.streamingservice.movies.entity.Director;
 import dev.studentpp1.streamingservice.movies.mapper.DirectorMapper;
 import dev.studentpp1.streamingservice.movies.repository.DirectorRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DirectorService {
@@ -20,31 +18,22 @@ public class DirectorService {
         this.directorMapper = directorMapper;
     }
 
-    public List<DirectorDto> getAllDirectors() {
-        return directorRepository.findAll().stream()
-                .map(directorMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
     public DirectorDto getDirectorById(Long id) {
         Director director = directorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Director not found with id: " + id));
         return directorMapper.toDto(director);
     }
 
-    public DirectorDto createDirector(DirectorDto dto) {
-        Director director = directorMapper.toEntity(dto);
-        Director savedDirector = directorRepository.save(director);
-        return directorMapper.toDto(savedDirector);
+    public DirectorDto createDirector(DirectorRequest request) {
+        Director director = directorMapper.toEntity(request);
+        return directorMapper.toDto(directorRepository.save(director));
     }
 
-    public DirectorDto updateDirector(Long id, DirectorDto dto) {
+    public DirectorDto updateDirector(Long id, DirectorRequest request) {
         Director existingDirector = directorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Director not found with id: " + id));
 
-        existingDirector.setName(dto.getName());
-        existingDirector.setSurname(dto.getSurname());
-        existingDirector.setBiography(dto.getBiography());
+        directorMapper.updateDirectorFromRequest(request, existingDirector);
 
         return directorMapper.toDto(directorRepository.save(existingDirector));
     }

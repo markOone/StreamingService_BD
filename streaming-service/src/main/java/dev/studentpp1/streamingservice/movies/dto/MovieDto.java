@@ -1,14 +1,14 @@
 package dev.studentpp1.streamingservice.movies.dto;
 
-import lombok.Data;
+public record MovieDto (
+        Long id,
+        String title,
+        String description,
+        Integer year,
+        Double rating,
+        Long directorId,
+        String directorName,
+        String directorSurname
+) {
 
-@Data
-public class MovieDto {
-    private Long id;
-    private String title;
-    private String description;
-    private Integer year;
-    private Double rating;
-
-    private Long directorId;
 }
