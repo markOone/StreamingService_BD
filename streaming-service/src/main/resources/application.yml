@@ -13,6 +13,10 @@ spring:
 server:
   port: 8081
 
+springdoc:
+  swagger-ui:
+    tryItOutEnabled: true
+
 app:
   payment:
     currency: usd

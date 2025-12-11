@@ -19,15 +19,26 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-    private static final String[] WHITE_LIST = {
+    private static final String[] WHITELIST = {
         "/api/auth/login",
         "/api/auth/register",
+        "/api/subscriptions",
+        "/api/subscriptions/{id}",
         "/api/subscription-plans",
         "/api/subscription-plans/{id}",
+        "/api/subscription-plans/{id}/movies",
         "/api/movie/{movie_id}",
         "/api/movie/actor/{actor_id}",
         "/api/movie/director/{director_id}",
         "/api/payments/webhook"
+    };
+
+    private static final String[] SWAGGER_WHITELIST = {
+        "/swagger-ui/**",
+        "/v3/api-docs/**",
+        "/swagger-resources/**",
+        "/swagger-resources",
+        "/swagger-ui.html"
     };
 
     // one AuthenticationManager for one filter chain
@@ -42,15 +53,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
         return httpSecurity
-                .sessionManagement(management -> management
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                )
-                .cors(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(config -> config
-                        .requestMatchers(WHITE_LIST).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .build();
+            .sessionManagement(management -> management
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            )
+            .cors(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(config -> config
+                .requestMatchers(WHITELIST).permitAll()
+                .requestMatchers(SWAGGER_WHITELIST).permitAll()
+                .anyRequest().authenticated()
+            )
+            .build();
     }
 }
