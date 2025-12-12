@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: dev.studentpp1.streamingservice.payments.service.PaymentServiceTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.178 s -- in dev.studentpp1.streamingservice.payments.service.PaymentServiceTest

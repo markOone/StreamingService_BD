@@ -1,6 +1,6 @@
 # Netflix like Streaming Service - Database Design 
 
-![ER diagram](https://github.com/user-attachments/assets/a125b0c0-ff6a-45be-acec-686d870d7b02)
+![ER diagram](lab1/ER%20diagram.jpg)
 
 ## Table of Contents
 
@@ -182,7 +182,7 @@ volumes:
 
 1. [Init database tables](\init_db\00_init_tables.sql)
 
-2. [Insert into table director](init_db/01_director.sql)
+2. [Insert into table director](lab2/01_director.sql)
 
 3. [Insert into table actor](init_db\02_actor.sql)
 

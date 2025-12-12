@@ -1,2 +1,4 @@
 streaming-service/.env
-/.idea/
+.idea
+.env
+.vscode
