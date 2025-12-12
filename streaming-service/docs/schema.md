@@ -2,7 +2,7 @@
 
 ## Діаграма сутність-зв'язок (ERD)
 
-![ER diagram](../../lab1/ER%20diagram.jpg)
+![ER diagram](https://raw.githubusercontent.com/markOone/StreamingService_BD/refs/heads/main/lab1/ER%20diagram.jpg)
 
 ## Таблиця: `users`
 
@@ -196,6 +196,7 @@
 **Призначення:** Зв'язкова таблиця many-to-many між фільмами та підписками (які фільми доступні в якому плані)
 
 **Стовпці:**
+
 | Стовпець | Тип | Обмеження | Опис |
 |----------|-----|-----------|------|
 | movie_id | INT | PRIMARY KEY (composite), FK | Посилання на фільм |
