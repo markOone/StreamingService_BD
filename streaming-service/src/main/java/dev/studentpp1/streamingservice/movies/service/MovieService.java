@@ -1,5 +1,6 @@
 package dev.studentpp1.streamingservice.movies.service;
 
+import dev.studentpp1.streamingservice.movies.dto.MovieDetailDto;
 import dev.studentpp1.streamingservice.movies.dto.MovieDto;
 import dev.studentpp1.streamingservice.movies.dto.MovieRequest;
 import dev.studentpp1.streamingservice.movies.entity.Director;
@@ -8,6 +9,7 @@ import dev.studentpp1.streamingservice.movies.mapper.MovieMapper;
 import dev.studentpp1.streamingservice.movies.repository.DirectorRepository;
 import dev.studentpp1.streamingservice.movies.repository.MovieRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +24,13 @@ public class MovieService {
         this.movieRepository = movieRepository;
         this.directorRepository = directorRepository;
         this.movieMapper = movieMapper;
+    }
+
+    @Transactional(readOnly = true)
+    public MovieDetailDto getMovieMethodDetails(Long id) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Movie not found with id: " + id));
+        return movieMapper.toDetailDto(movie);
     }
 
     public List<MovieDto> getAllMovies() {

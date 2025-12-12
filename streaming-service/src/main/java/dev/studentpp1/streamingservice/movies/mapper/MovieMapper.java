@@ -1,23 +1,16 @@
 package dev.studentpp1.streamingservice.movies.mapper;
 
-import dev.studentpp1.streamingservice.movies.dto.MovieDto;
-import dev.studentpp1.streamingservice.movies.dto.MovieRequest;
+import dev.studentpp1.streamingservice.movies.dto.*;
 import dev.studentpp1.streamingservice.movies.entity.Movie;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import dev.studentpp1.streamingservice.movies.entity.Performance;
+import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {DirectorMapper.class})
 public interface MovieMapper {
 
     @Mapping(source = "director.id", target = "directorId")
-    @Mapping(source = "director.name", target = "directorName")
-    @Mapping(source = "director.surname", target = "directorSurname")
     MovieDto toDto(Movie movie);
 
     List<MovieDto> toDtoList(List<Movie> movies);
@@ -33,4 +26,12 @@ public interface MovieMapper {
     @Mapping(target = "director", ignore = true)
     @Mapping(target = "performances", ignore = true)
     void updateMovieFromRequest(MovieRequest request, @MappingTarget Movie movie);
+
+    @Mapping(source = "performances", target = "cast")
+    MovieDetailDto toDetailDto(Movie movie);
+
+    @Mapping(source = "actor.id", target = "actorId")
+    @Mapping(source = "actor.name", target = "actorName")
+    @Mapping(source = "actor.surname", target = "actorSurname")
+    MovieCastDto performanceToCastDto(Performance performance);
 }

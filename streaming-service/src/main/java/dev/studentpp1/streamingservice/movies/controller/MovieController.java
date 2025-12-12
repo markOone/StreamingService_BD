@@ -1,5 +1,6 @@
 package dev.studentpp1.streamingservice.movies.controller;
 
+import dev.studentpp1.streamingservice.movies.dto.MovieDetailDto;
 import dev.studentpp1.streamingservice.movies.dto.MovieDto;
 import dev.studentpp1.streamingservice.movies.dto.MovieRequest;
 import dev.studentpp1.streamingservice.movies.service.MovieService;
@@ -18,6 +19,11 @@ public class MovieController {
 
     public MovieController(MovieService movieService) {
         this.movieService = movieService;
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<MovieDetailDto> getMovieMethodDetails(@PathVariable Long id) {
+        return ResponseEntity.ok(movieService.getMovieMethodDetails(id));
     }
 
     @GetMapping

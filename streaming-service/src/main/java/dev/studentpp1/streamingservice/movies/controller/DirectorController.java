@@ -1,5 +1,6 @@
 package dev.studentpp1.streamingservice.movies.controller;
 
+import dev.studentpp1.streamingservice.movies.dto.DirectorDetailDto;
 import dev.studentpp1.streamingservice.movies.dto.DirectorDto;
 import dev.studentpp1.streamingservice.movies.dto.DirectorRequest;
 import dev.studentpp1.streamingservice.movies.service.DirectorService;
@@ -7,8 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/directors")
@@ -18,6 +17,11 @@ public class DirectorController {
 
     public DirectorController(DirectorService directorService) {
         this.directorService = directorService;
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<DirectorDetailDto> getDirectorDetails(@PathVariable Long id) {
+        return ResponseEntity.ok(directorService.getDirectorDetails(id));
     }
 
     @GetMapping("/{id}")

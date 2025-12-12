@@ -1,5 +1,6 @@
 package dev.studentpp1.streamingservice.movies.controller;
 
+import dev.studentpp1.streamingservice.movies.dto.ActorDetailDto;
 import dev.studentpp1.streamingservice.movies.dto.ActorDto;
 import dev.studentpp1.streamingservice.movies.dto.ActorRequest;
 import dev.studentpp1.streamingservice.movies.service.ActorService;
@@ -7,8 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/actors")
@@ -18,6 +17,11 @@ public class ActorController {
 
     public ActorController(ActorService actorService) {
         this.actorService = actorService;
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<ActorDetailDto> getActorDetails(@PathVariable Long id) {
+        return ResponseEntity.ok(actorService.getActorDetails(id));
     }
 
     @GetMapping("/{id}")

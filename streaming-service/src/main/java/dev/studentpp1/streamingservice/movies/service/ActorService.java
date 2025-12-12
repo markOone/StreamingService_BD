@@ -1,11 +1,13 @@
 package dev.studentpp1.streamingservice.movies.service;
 
+import dev.studentpp1.streamingservice.movies.dto.ActorDetailDto;
 import dev.studentpp1.streamingservice.movies.dto.ActorDto;
 import dev.studentpp1.streamingservice.movies.dto.ActorRequest;
 import dev.studentpp1.streamingservice.movies.entity.Actor;
 import dev.studentpp1.streamingservice.movies.mapper.ActorMapper;
 import dev.studentpp1.streamingservice.movies.repository.ActorRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ActorService {
@@ -16,6 +18,13 @@ public class ActorService {
     public ActorService(ActorRepository actorRepository, ActorMapper actorMapper) {
         this.actorRepository = actorRepository;
         this.actorMapper = actorMapper;
+    }
+
+    @Transactional(readOnly = true)
+    public ActorDetailDto getActorDetails(Long id) {
+        Actor actor = actorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Actor not found with id: " + id));
+        return actorMapper.toDetailDto(actor);
     }
 
     public ActorDto getActorById(Long id) {
@@ -36,7 +45,9 @@ public class ActorService {
 
         actorMapper.updateActorFromRequest(request, existingActor);
 
-        return actorMapper.toDto(actorRepository.save(existingActor));
+        Actor updatedActor = actorRepository.save(existingActor);
+
+        return actorMapper.toDto(updatedActor);
     }
 
     public void deleteActor(Long id) {
