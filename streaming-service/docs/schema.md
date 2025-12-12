@@ -84,25 +84,35 @@
 
 ## Таблиця: `payment`
 
-**Призначення:** Зберігає історію всіх платежів
+**Призначення:** Зберігає інформацію про всі платежі користувачів, включно з ініційованими (PENDING), успішними (COMPLETED) та неуспішними (FAILED). 
+Таблиця використовується для історії оплат, аналітики та забезпечення коректної обробки конкурентних платіжних подій.
 
-**Стовпці:**
+### **Стовпці:**
 
-| Стовпець | Тип | Обмеження | Опис |
-|----------|-----|-----------|------|
-| payment_id | SERIAL | PRIMARY KEY | Унікальний ідентифікатор платежу |
-| paid_at | TIMESTAMP | NOT NULL, DEFAULT NOW() | Час здійснення платежу |
-| amount | DECIMAL(10, 2) | NOT NULL, CHECK (amount > 0) | Сума платежу |
-| status | payment_status | NOT NULL | Статус (PENDING/COMPLETED/FAILED/REFUNDED) |
-| user_subscription_id | INT | NOT NULL, FK | Посилання на підписку |
+| Стовпець               | Тип            | Обмеження                    | Опис                                                                        |
+| ---------------------- | -------------- | ---------------------------- |-----------------------------------------------------------------------------|
+| `payment_id`           | SERIAL         | PRIMARY KEY                  | Унікальний ідентифікатор платежу                                            |
+| `provider_session_id`  | VARCHAR(255)   | UNIQUE, NULL                 | Зовнішній ідентифікатор платежу у платіжного провайдера                     |
+| `created_at`           | TIMESTAMP      | NOT NULL, DEFAULT NOW()      | Час створення платежу (момент ініціації оплати)                             |
+| `paid_at`              | TIMESTAMP      | NULL                         | Час успішного завершення платежу; заповнюється лише для статусу `COMPLETED` |
+| `amount`               | DECIMAL(10, 2) | NOT NULL, CHECK (amount > 0) | Сума платежу                                                                |
+| `status`               | payment_status | NOT NULL                     | Статус платежу (`PENDING`, `COMPLETED`, `FAILED`, `REFUNDED`)               |
+| `user_subscription_id` | INT            | NULL, FK                     | Посилання на підписку користувача; встановлюється після успішної оплати     |
 
-**Індекси:**
-- `idx_payment_user_subscription_id` на `user_subscription_id` (для JOIN операцій)
-- `idx_payment_status_paid_at` на `(status, paid_at DESC)` (для аналітики)
-- `idx_payment_paid_at` на `paid_at` (для видалення старих записів)
+### **Індекси:**
 
-**Зв'язки:**
-- Багато-до-одного з `user_subscription` (FK: user_subscription_id)
+* `uk_payment_provider_pid` -- унікальний індекс на `provider_session_id`
+  *(забезпечує ідемпотентність обробки платіжних подій)*
+* `idx_payment_status_created_at` на `(status, created_at)`
+  *(для пошуку та очищення завислих платежів зі статусом `PENDING`)*
+* `idx_payment_user_subscription_id` на `user_subscription_id`
+  *(для JOIN-операцій та аналітики)*
+
+### **Зв'язки:**
+
+* **Багато-до-одного** з таблицею `user_subscription`
+  (`payment.user_subscription_id → user_subscription.user_subscription_id`)
+  -- зв'язок встановлюється **після успішної оплати**.
 
 ---
 
@@ -242,7 +252,7 @@
 
 **1. Денормалізація для аналітики:**
 - Не додавали `total_amount` в `user_subscription` (рахується через SUM платежів)
-- **Причина:** Уникнення data anomalies, але це сповільнює деякі запити
+- **Причина:** Уникнення аномалій, але це сповільнює деякі запити
 
 **2. М'яке видалення (soft delete) тільки для users:**
 - `deleted` колонка тільки в таблиці `users`, але не в інших
@@ -251,7 +261,7 @@
 
 **3. Збереження історії підписок:**
 - `user_subscription` зберігає всі підписки (ACTIVE, CANCELLED, EXPIRED)
-- **Причина:** Аналітика churn rate, lifetime value
+- **Причина:** Аналітика 
 - **Компроміс:** Таблиця росте швидше, але це критично для бізнес-аналітики
 
 ## Стратегія індексування

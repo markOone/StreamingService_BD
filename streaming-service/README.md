@@ -70,7 +70,7 @@ mvn -Dtest=PaymentRepositoryTest test
 ```
 
 ```bash
-mvn -Dtest=PaymentRepositoryTest#shouldSavePayment test
+mvn -Dtest=PaymentRepositoryTest#deletePaymentsBefore_removesOnlyOlderPayments test
 ```
 
 ## Project structure
