@@ -2,7 +2,7 @@
 
 ## Діаграма сутність-зв'язок (ERD)
 
-![ER diagram](https://github.com/user-attachments/assets/a125b0c0-ff6a-45be-acec-686d870d7b02)
+![ER diagram](../../lab1/ER%20diagram.jpg)
 
 ## Таблиця: `users`
 
