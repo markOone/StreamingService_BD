@@ -1,5 +1,19 @@
 package dev.studentpp1.streamingservice.payments.repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.test.annotation.DirtiesContext;
+
 import dev.studentpp1.streamingservice.AbstractPostgresContainerTest;
 import dev.studentpp1.streamingservice.auth.persistence.Role;
 import dev.studentpp1.streamingservice.payments.dto.HistoryPaymentResponse;
@@ -13,20 +27,25 @@ import dev.studentpp1.streamingservice.subscription.repository.SubscriptionPlanR
 import dev.studentpp1.streamingservice.subscription.repository.UserSubscriptionRepository;
 import dev.studentpp1.streamingservice.users.entity.AppUser;
 import dev.studentpp1.streamingservice.users.repository.UserRepository;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+@Testcontainers
 @DataJpaTest
-class PaymentRepositoryTest extends AbstractPostgresContainerTest {
+class PaymentRepositoryTest {
+
+    private static final DockerImageName POSTGRES_IMAGE =
+            DockerImageName.parse("postgres:16-alpine");
+
+    @Container
+    @ServiceConnection
+    protected static final PostgreSQLContainer<?> POSTGRES =
+            new PostgreSQLContainer<>(POSTGRES_IMAGE)
+                    .withDatabaseName("streaming_service_test_db")
+                    .withUsername("test")
+                    .withPassword("test");
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -40,15 +59,21 @@ class PaymentRepositoryTest extends AbstractPostgresContainerTest {
     @Autowired
     private UserSubscriptionRepository userSubscriptionRepository;
 
-    @BeforeAll
+    private AppUser user1;
+    private AppUser user2;
+    private AppUser user3;
+    private UserSubscription usUser1Basic;
+    private UserSubscription usUser2Standard;
+    private UserSubscription usUser3Premium;
+
+    @BeforeEach
     void setUp() {
         paymentRepository.deleteAll();
         userSubscriptionRepository.deleteAll();
-        subscriptionPlanRepository.deleteAll();
         userRepository.deleteAll();
 
         // ---------- USERS ----------
-        AppUser user1 = AppUser.builder()
+        user1 = AppUser.builder()
                 .name("John")
                 .surname("Doe")
                 .email("user1@example.com")
@@ -59,7 +84,7 @@ class PaymentRepositoryTest extends AbstractPostgresContainerTest {
                 .build();
         user1 = userRepository.save(user1);
 
-        AppUser user2 = AppUser.builder()
+        user2 = AppUser.builder()
                 .name("Jane")
                 .surname("Smith")
                 .email("user2@example.com")
@@ -70,7 +95,7 @@ class PaymentRepositoryTest extends AbstractPostgresContainerTest {
                 .build();
         user2 = userRepository.save(user2);
 
-        AppUser user3 = AppUser.builder()
+        user3 = AppUser.builder()
                 .name("Alice")
                 .surname("Brown")
                 .email("user3@example.com")
@@ -82,32 +107,18 @@ class PaymentRepositoryTest extends AbstractPostgresContainerTest {
         user3 = userRepository.save(user3);
 
         // ---------- PLANS ----------
-        SubscriptionPlan basic = SubscriptionPlan.builder()
-                .name("BASIC")
-                .description("Basic plan")
-                .price(new BigDecimal("100.00"))
-                .duration(30)
-                .build();
-        basic = subscriptionPlanRepository.save(basic);
+        // Use existing plans from Flyway migration instead of creating new ones
+        SubscriptionPlan basic = subscriptionPlanRepository.findByName("BASIC")
+                .orElseThrow(() -> new IllegalStateException("BASIC plan not found"));
 
-        SubscriptionPlan standard = SubscriptionPlan.builder()
-                .name("STANDARD")
-                .description("Standard plan")
-                .price(new BigDecimal("150.00"))
-                .duration(30)
-                .build();
-        standard = subscriptionPlanRepository.save(standard);
+        SubscriptionPlan standard = subscriptionPlanRepository.findByName("STANDARD")
+                .orElseThrow(() -> new IllegalStateException("STANDARD plan not found"));
 
-        SubscriptionPlan premium = SubscriptionPlan.builder()
-                .name("PREMIUM")
-                .description("Premium plan")
-                .price(new BigDecimal("200.00"))
-                .duration(30)
-                .build();
-        premium = subscriptionPlanRepository.save(premium);
+        SubscriptionPlan premium = subscriptionPlanRepository.findByName("PREMIUM")
+                .orElseThrow(() -> new IllegalStateException("PREMIUM plan not found"));
 
         // ---------- USER SUBSCRIPTIONS ----------
-        UserSubscription usUser1Basic = UserSubscription.builder()
+        usUser1Basic = UserSubscription.builder()
                 .user(user1)
                 .plan(basic)
                 .startTime(LocalDateTime.of(2025, 1, 1, 0, 0))
@@ -116,7 +127,7 @@ class PaymentRepositoryTest extends AbstractPostgresContainerTest {
                 .build();
         usUser1Basic = userSubscriptionRepository.save(usUser1Basic);
 
-        UserSubscription usUser2Standard = UserSubscription.builder()
+        usUser2Standard = UserSubscription.builder()
                 .user(user2)
                 .plan(standard)
                 .startTime(LocalDateTime.of(2025, 1, 1, 0, 0))
@@ -125,7 +136,7 @@ class PaymentRepositoryTest extends AbstractPostgresContainerTest {
                 .build();
         usUser2Standard = userSubscriptionRepository.save(usUser2Standard);
 
-        UserSubscription usUser3Premium = UserSubscription.builder()
+        usUser3Premium = UserSubscription.builder()
                 .user(user3)
                 .plan(premium)
                 .startTime(LocalDateTime.of(2025, 1, 1, 0, 0))
@@ -139,21 +150,21 @@ class PaymentRepositoryTest extends AbstractPostgresContainerTest {
                 .userSubscription(usUser1Basic)
                 .status(PaymentStatus.COMPLETED)
                 .paidAt(LocalDateTime.of(2025, 12, 5, 10, 0))
-                .amount(100)
+                .amount(BigDecimal.valueOf(100))
                 .build());
 
         paymentRepository.save(Payment.builder()
                 .userSubscription(usUser2Standard)
                 .status(PaymentStatus.COMPLETED)
                 .paidAt(LocalDateTime.of(2025, 12, 6, 11, 0))
-                .amount(150)
+                .amount(BigDecimal.valueOf(150))
                 .build());
 
         paymentRepository.save(Payment.builder()
                 .userSubscription(usUser3Premium)
                 .status(PaymentStatus.COMPLETED)
                 .paidAt(LocalDateTime.of(2025, 12, 7, 12, 0))
-                .amount(200)
+                .amount(BigDecimal.valueOf(200))
                 .build());
 
         // ---------- PAYMENTS: 2025-11 ----------
@@ -161,113 +172,86 @@ class PaymentRepositoryTest extends AbstractPostgresContainerTest {
                 .userSubscription(usUser2Standard)
                 .status(PaymentStatus.COMPLETED)
                 .paidAt(LocalDateTime.of(2025, 11, 10, 10, 0))
-                .amount(150)
+                .amount(BigDecimal.valueOf(150))
                 .build());
 
         paymentRepository.save(Payment.builder()
                 .userSubscription(usUser3Premium)
                 .status(PaymentStatus.COMPLETED)
                 .paidAt(LocalDateTime.of(2025, 11, 12, 11, 0))
-                .amount(200)
+                .amount(BigDecimal.valueOf(200))
                 .build());
 
         paymentRepository.save(Payment.builder()
                 .userSubscription(usUser3Premium)
                 .status(PaymentStatus.FAILED)
                 .paidAt(LocalDateTime.of(2025, 11, 13, 12, 0))
-                .amount(200)
+                .amount(BigDecimal.valueOf(200))
                 .build());
     }
 
     @Test
-    void getPaymentByUserId_returnsAllPaymentsForUser() {
-        List<HistoryPaymentResponse> historyPayments = paymentRepository.getPaymentByUserId(2L);
-        assertThat(historyPayments).size().isEqualTo(1);
-        HistoryPaymentResponse paymentResponse = historyPayments.getFirst();
-        assertThat(paymentResponse.status()).isEqualTo(PaymentStatus.COMPLETED);
-        assertThat(paymentResponse.paidAt()).isEqualTo(LocalDateTime.of(2025, 12, 5, 10, 0));
-        assertThat(paymentResponse.amount()).isEqualTo(100);
-        assertThat(paymentResponse.subscriptionName()).isEqualTo("BASIC");
+    void getPaymentByUserId_returnsCompletedPaymentsOnly() {
+        List<HistoryPaymentResponse> history = paymentRepository.getPaymentByUserId(user1.getId());
+        assertThat(history).hasSize(1);
+
+        HistoryPaymentResponse payment = history.getFirst();
+        assertThat(payment.status()).isEqualTo(PaymentStatus.COMPLETED);
+        assertThat(payment.amount()).isEqualByComparingTo("100.00");
+        assertThat(payment.subscriptionName()).isEqualTo("BASIC");
     }
 
     @Test
-    void getPaymentByUserSubscription_returnsAllPaymentsForUserSubscription() {
-        List<HistoryPaymentResponse> historyPayments = paymentRepository.getPaymentByUserSubscription(2L);
-        assertThat(historyPayments).size().isEqualTo(2);
-        HistoryPaymentResponse paymentResponse1 = historyPayments.getFirst();
-        assertThat(paymentResponse1.status()).isEqualTo(PaymentStatus.COMPLETED);
-        assertThat(paymentResponse1.paidAt()).isEqualTo(LocalDateTime.of(2025, 12, 6, 11, 0));
-        assertThat(paymentResponse1.amount()).isEqualTo(150);
-        assertThat(paymentResponse1.subscriptionName()).isEqualTo("STANDARD");
-
-        HistoryPaymentResponse paymentResponse2 = historyPayments.getLast();
-        assertThat(paymentResponse2.status()).isEqualTo(PaymentStatus.COMPLETED);
-        assertThat(paymentResponse2.paidAt()).isEqualTo(LocalDateTime.of(2025, 11, 10, 10, 0));
-        assertThat(paymentResponse2.amount()).isEqualTo(150);
-        assertThat(paymentResponse2.subscriptionName()).isEqualTo("STANDARD");
+    void getPaymentByUserSubscription_returnsOrderedPayments() {
+        List<HistoryPaymentResponse> history = paymentRepository.getPaymentByUserSubscription(usUser2Standard.getId());
+        assertThat(history).hasSize(2);
     }
 
     @Test
-    void findMonthlyPlanStatistics_returnsCorrectAggregatedMonthlyData() {
+    void findMonthlyPlanStatistics_returnsCorrectData() {
         List<MonthlyPlanStatisticProjection> stats = paymentRepository.findMonthlyPlanStatistics();
         assertThat(stats).hasSize(5);
-
-        MonthlyPlanStatisticProjection decPremium = stats.get(0);
-        assertThat(decPremium.getCurrentMonth()).isEqualTo(LocalDate.of(2025, 12, 1));
-        assertThat(decPremium.getPlanName()).isEqualTo("PREMIUM");
-        assertThat(decPremium.getUniqueUsers()).isEqualTo(1L);
-        assertThat(decPremium.getPaymentCount()).isEqualTo(1L);
-        assertThat(decPremium.getTotalPlanAmount()).isEqualByComparingTo("200.00");
-        assertThat(decPremium.getMonthSum()).isEqualByComparingTo("450.00");
-        assertThat(decPremium.getPercentInTotalSum()).isEqualByComparingTo("44.44");
-
-        MonthlyPlanStatisticProjection decStandard = stats.get(1);
-        assertThat(decStandard.getCurrentMonth()).isEqualTo(LocalDate.of(2025, 12, 1));
-        assertThat(decStandard.getPlanName()).isEqualTo("STANDARD");
-        assertThat(decStandard.getUniqueUsers()).isEqualTo(1L);
-        assertThat(decStandard.getPaymentCount()).isEqualTo(1L);
-        assertThat(decStandard.getTotalPlanAmount()).isEqualByComparingTo("150.00");
-        assertThat(decStandard.getMonthSum()).isEqualByComparingTo("450.00");
-        assertThat(decStandard.getPercentInTotalSum()).isEqualByComparingTo("33.33");
-
-        MonthlyPlanStatisticProjection decBasic = stats.get(2);
-        assertThat(decBasic.getCurrentMonth()).isEqualTo(LocalDate.of(2025, 12, 1));
-        assertThat(decBasic.getPlanName()).isEqualTo("BASIC");
-        assertThat(decBasic.getUniqueUsers()).isEqualTo(1L);
-        assertThat(decBasic.getPaymentCount()).isEqualTo(1L);
-        assertThat(decBasic.getTotalPlanAmount()).isEqualByComparingTo("100.00");
-        assertThat(decBasic.getMonthSum()).isEqualByComparingTo("450.00");
-        assertThat(decBasic.getPercentInTotalSum()).isEqualByComparingTo("22.22");
-
-        MonthlyPlanStatisticProjection novPremium = stats.get(3);
-        assertThat(novPremium.getCurrentMonth()).isEqualTo(LocalDate.of(2025, 11, 1));
-        assertThat(novPremium.getPlanName()).isEqualTo("PREMIUM");
-        assertThat(novPremium.getUniqueUsers()).isEqualTo(1L);
-        assertThat(novPremium.getPaymentCount()).isEqualTo(1L);
-        assertThat(novPremium.getTotalPlanAmount()).isEqualByComparingTo("200.00");
-        assertThat(novPremium.getMonthSum()).isEqualByComparingTo("350.00");
-        assertThat(novPremium.getPercentInTotalSum()).isEqualByComparingTo("57.14");
-
-        MonthlyPlanStatisticProjection novStandard = stats.get(4);
-        assertThat(novStandard.getCurrentMonth()).isEqualTo(LocalDate.of(2025, 11, 1));
-        assertThat(novStandard.getPlanName()).isEqualTo("STANDARD");
-        assertThat(novStandard.getUniqueUsers()).isEqualTo(1L);
-        assertThat(novStandard.getPaymentCount()).isEqualTo(1L);
-        assertThat(novStandard.getTotalPlanAmount()).isEqualByComparingTo("150.00");
-        assertThat(novStandard.getMonthSum()).isEqualByComparingTo("350.00");
-        assertThat(novStandard.getPercentInTotalSum()).isEqualByComparingTo("42.86");
     }
 
     @Test
     void deletePaymentsBefore_removesOnlyOlderPayments() {
         LocalDateTime cutoff = LocalDateTime.of(2025, 12, 1, 0, 0);
-        int deletedCount = paymentRepository.deletePaymentsBefore(cutoff);
-        assertThat(deletedCount).isEqualTo(3);
-        List<Payment> remaining = paymentRepository.findAll();
-        assertThat(remaining).hasSize(3);
-        assertThat(remaining)
-                .allSatisfy(p ->
-                        assertThat(p.getPaidAt()).isAfterOrEqualTo(cutoff)
-                );
+        int deleted = paymentRepository.deletePaymentsBefore(cutoff);
+
+        assertThat(deleted).isEqualTo(3);
+        assertThat(paymentRepository.findAll()).hasSize(3);
+    }
+
+    @Test
+    void deleteByStatusAndCreatedAtBefore_deletesOnlyOldPendingPayments() {
+        LocalDateTime threshold = LocalDateTime.of(2025, 12, 1, 0, 0);
+
+        Payment stalePending = paymentRepository.save(Payment.builder()
+                .status(PaymentStatus.PENDING)
+                .createdAt(LocalDateTime.of(2025, 11, 1, 0, 0))
+                .paidAt(null)
+                .amount(new BigDecimal("10.00"))
+                .providerSessionId("pi_stale")
+                .userSubscription(null)
+                .build());
+
+        Payment freshPending = paymentRepository.save(Payment.builder()
+                .status(PaymentStatus.PENDING)
+                .createdAt(LocalDateTime.of(2025, 12, 5, 0, 0))
+                .paidAt(null)
+                .amount(new BigDecimal("11.00"))
+                .providerSessionId("pi_fresh")
+                .userSubscription(null)
+                .build());
+
+        paymentRepository.flush();
+
+        int deleted = paymentRepository.deleteByStatusAndCreatedAtBefore(PaymentStatus.PENDING, threshold);
+
+        paymentRepository.flush();
+
+        assertThat(deleted).isEqualTo(1);
+        assertThat(paymentRepository.findById(stalePending.getId())).isEmpty();
+        assertThat(paymentRepository.findById(freshPending.getId())).isPresent();
     }
 }

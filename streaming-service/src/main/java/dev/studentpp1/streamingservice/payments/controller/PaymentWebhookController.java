@@ -3,7 +3,7 @@ package dev.studentpp1.streamingservice.payments.controller;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
-import dev.studentpp1.streamingservice.payments.service.PaymentStatusService;
+import dev.studentpp1.streamingservice.payments.service.PaymentWebhookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +20,7 @@ public class PaymentWebhookController {
     @Value("${app.payment.webhook.key}")
     private String endpointSecret;
 
-    private final PaymentStatusService paymentStatusService;
+    private final PaymentWebhookService paymentWebhookService;
 
     @PostMapping
     public ResponseEntity<Void> handleStripeEvent(
@@ -28,7 +28,7 @@ public class PaymentWebhookController {
             @RequestHeader("Stripe-Signature") String sigHeader
     ) throws SignatureVerificationException {
         Event event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
-        paymentStatusService.handlePaymentEvent(event);
+        paymentWebhookService.handlePaymentEvent(event);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

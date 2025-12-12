@@ -1,19 +1,5 @@
 package dev.studentpp1.streamingservice.users.service;
 
-import java.time.LocalDate;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import dev.studentpp1.streamingservice.AbstractPostgresContainerTest;
 import dev.studentpp1.streamingservice.auth.persistence.AuthenticatedUser;
 import dev.studentpp1.streamingservice.users.dto.RegisterUserRequest;
@@ -21,6 +7,19 @@ import dev.studentpp1.streamingservice.users.dto.UpdateUserRequest;
 import dev.studentpp1.streamingservice.users.entity.AppUser;
 import dev.studentpp1.streamingservice.users.exception.UserAlreadyExistsException;
 import dev.studentpp1.streamingservice.users.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class UserServiceTest extends AbstractPostgresContainerTest {
@@ -103,7 +102,7 @@ class UserServiceTest extends AbstractPostgresContainerTest {
     }
 
     @Test
-    void testFindByEmail_ActiveUserFound(){
+    void testFindByEmail_ActiveUserFound() {
         userService.createUser(validRegisterRequest);
         AppUser foundUser = userService.findByEmail(validRegisterRequest.email());
         assertThat(foundUser.getEmail()).isEqualTo(validRegisterRequest.email());
