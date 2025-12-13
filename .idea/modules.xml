@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/StreamingService_BD.iml" filepath="$PROJECT_DIR$/.idea/StreamingService_BD.iml" />
-      <module fileurl="file://$PROJECT_DIR$/streaming-service/streaming-service.iml" filepath="$PROJECT_DIR$/streaming-service/streaming-service.iml" />
     </modules>
   </component>
 </project>
