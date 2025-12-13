@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
 @Getter
 @Setter
@@ -13,11 +15,13 @@ import org.hibernate.annotations.CreationTimestamp;
 @Builder
 @Entity
 @Table(name = "user_subscription")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserSubscription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_subscription_id")
+    @EqualsAndHashCode.Include
     private Long id;
 
     @CreationTimestamp
@@ -29,9 +33,10 @@ public class UserSubscription {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private SubscriptionStatus status;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "subscription_plan_id")
     private SubscriptionPlan plan;
 
