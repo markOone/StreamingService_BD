@@ -1,5 +1,6 @@
 package dev.studentpp1.streamingservice.subscription.mapper;
 
+import dev.studentpp1.streamingservice.movies.mapper.MovieMapper;
 import dev.studentpp1.streamingservice.subscription.dto.CreateSubscriptionPlanRequest;
 import dev.studentpp1.streamingservice.subscription.dto.SubscriptionPlanDetailsDto;
 import dev.studentpp1.streamingservice.subscription.dto.SubscriptionPlanSummaryDto;
@@ -9,7 +10,11 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
 
-@Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(
+    componentModel = "spring",
+    nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+    uses = {MovieMapper.class}
+)
 public interface SubscriptionPlanMapper {
     SubscriptionPlanSummaryDto toSummaryDto(SubscriptionPlan plan);
     SubscriptionPlanDetailsDto toDetailsDto(SubscriptionPlan plan);
