@@ -13,15 +13,17 @@ public class SubscriptionPlanUtils {
     private final SubscriptionPlanRepository subscriptionPlanRepository;
 
     public SubscriptionPlan findByName(String planName) {
-        return subscriptionPlanRepository
-                .findByName(planName)
-                .orElseThrow(() -> new SubscriptionPlanNotFoundException("Plan not found with name " + planName));
+        return subscriptionPlanRepository.findByName(planName)
+            .orElseThrow(
+                () -> new SubscriptionPlanNotFoundException("Plan not found with name " + planName)
+            );
     }
 
     public SubscriptionPlan findById(Long subscriptionId) {
         return subscriptionPlanRepository.findById(subscriptionId)
-                .orElseThrow(
-                        () -> new SubscriptionNotFoundException(
-                                "Subscription not found with id " + subscriptionId));
+            .orElseThrow(
+                () -> new SubscriptionNotFoundException(
+                    "Subscription not found with id " + subscriptionId)
+            );
     }
 }

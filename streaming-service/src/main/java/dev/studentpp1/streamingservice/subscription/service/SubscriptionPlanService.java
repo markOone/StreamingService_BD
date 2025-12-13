@@ -12,7 +12,6 @@ import dev.studentpp1.streamingservice.subscription.repository.SubscriptionPlanR
 import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,62 +24,62 @@ public class SubscriptionPlanService {
     private final SubscriptionPlanMapper subscriptionPlanMapper;
     private final SubscriptionPlanUtils subscriptionPlanUtils;
 
-    public List<SubscriptionPlanSummaryDto> getAllPlans() {
-        return subscriptionPlanRepository.findAll()
-            .stream()
-            .map(subscriptionPlanMapper::toSummaryDto)
-            .toList();
+    public List<SubscriptionPlan> getAllPlans() {
+        return subscriptionPlanRepository.findAll();
     }
 
-    public SubscriptionPlanDetailsDto getPlanById(Long id) {
-        return subscriptionPlanRepository.findById(id)
-            .map(subscriptionPlanMapper::toDetailsDto)
-            .orElseThrow(() -> new SubscriptionPlanNotFoundException(
-                "Subscription Plan not found with id " + id));
+    public SubscriptionPlan getPlanById(Long id) {
+        return subscriptionPlanUtils.findById(id);
     }
 
     @Transactional
-    public SubscriptionPlanSummaryDto createPlan(CreateSubscriptionPlanRequest request) {
+    public SubscriptionPlan createPlan(CreateSubscriptionPlanRequest request) {
         SubscriptionPlan plan = subscriptionPlanMapper.toEntity(request);
 
-        if (request.includedMovieIds() != null && !request.includedMovieIds().isEmpty()) {
-            List<Movie> movies = movieRepository.findAllById(request.includedMovieIds());
-
-            if (movies.size() != request.includedMovieIds().size()) {
-                throw new IllegalArgumentException("Some movies were not found");
-            }
-
+        if (request.includedMovieIds() != null) {
+            List<Movie> movies = getMovies(request.includedMovieIds());
             plan.setMovies(new HashSet<>(movies));
         }
 
-        SubscriptionPlan savedPlan = subscriptionPlanRepository.save(plan);
-        return subscriptionPlanMapper.toSummaryDto(savedPlan);
+        return subscriptionPlanRepository.save(plan);
     }
 
     @Transactional
-    public SubscriptionPlanSummaryDto updatePlan(Long id, CreateSubscriptionPlanRequest request) {
+    public SubscriptionPlan updatePlan(Long id, CreateSubscriptionPlanRequest request) {
         SubscriptionPlan plan = subscriptionPlanUtils.findById(id);
 
         subscriptionPlanMapper.updateEntityFromDto(request, plan);
 
         if (request.includedMovieIds() != null) {
-            List<Movie> movies = movieRepository.findAllById(request.includedMovieIds());
+            List<Movie> movies = getMovies(request.includedMovieIds());
             plan.setMovies(new HashSet<>(movies));
         }
 
-        SubscriptionPlan updatedPlan = subscriptionPlanRepository.save(plan);
-        return subscriptionPlanMapper.toSummaryDto(updatedPlan);
+        return subscriptionPlanRepository.save(plan);
     }
 
     @Transactional
-    public SubscriptionPlanSummaryDto addMoviesToPlan(Long planId, List<Long> movieIds) {
+    public SubscriptionPlan addMoviesToPlan(Long planId, List<Long> movieIds) {
         SubscriptionPlan plan = subscriptionPlanUtils.findById(planId);
-        List<Movie> newMovies = movieRepository.findAllById(movieIds);
+        List<Movie> newMovies = getMovies(movieIds);
 
         plan.getMovies().addAll(newMovies);
-        SubscriptionPlan updatedPlan = subscriptionPlanRepository.save(plan);
 
-        return subscriptionPlanMapper.toSummaryDto(updatedPlan);
+        return subscriptionPlanRepository.save(plan);
+    }
+
+    private List<Movie> getMovies(List<Long> movieIds) {
+        List<Movie> newMovies = movieRepository.findAllById(movieIds);
+
+        if (newMovies.size() != new HashSet<>(movieIds).size()) {
+            List<Long> foundIds = newMovies.stream().map(Movie::getId).toList();
+            List<Long> missingIds = movieIds.stream()
+                .filter(id -> !foundIds.contains(id))
+                .toList();
+            throw new IllegalArgumentException("Movies not found with ids: " + missingIds);
+        }
+
+        return newMovies;
     }
 
     @Transactional
@@ -92,8 +91,10 @@ public class SubscriptionPlanService {
         subscriptionPlanRepository.deleteById(id);
     }
 
+
+    // TODO: choose removal strategy (Idempotency or Strictness)
     @Transactional
-    public SubscriptionPlanSummaryDto removeMoviesFromPlan(Long planId, List<Long> movieIds) {
+    public SubscriptionPlan removeMoviesFromPlan(Long planId, List<Long> movieIds) {
         SubscriptionPlan plan = subscriptionPlanUtils.findById(planId);
 
         boolean changed = plan.getMovies().removeIf(movie -> movieIds.contains(movie.getId()));
@@ -102,7 +103,6 @@ public class SubscriptionPlanService {
             throw new IllegalArgumentException("None of the provided movies were found in the plan");
         }
 
-        SubscriptionPlan updatedPlan = subscriptionPlanRepository.save(plan);
-        return subscriptionPlanMapper.toSummaryDto(updatedPlan);
+        return subscriptionPlanRepository.save(plan);
     }
 }
