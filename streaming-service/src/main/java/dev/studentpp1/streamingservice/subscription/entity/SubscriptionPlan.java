@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Setter
@@ -14,11 +16,15 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "subscription_plan")
+@SQLDelete(sql = "UPDATE subscription_plan SET deleted = true WHERE subscription_plan_id = ?")
+@SQLRestriction("deleted = false")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class SubscriptionPlan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subscription_plan_id")
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -41,10 +47,4 @@ public class SubscriptionPlan {
     )
     @Builder.Default
     private Set<Movie> movies = new HashSet<>();
-
-    @Builder.Default
-    @Column(nullable = false)
-    private boolean active = true;
-
-    // Movie equals and hashCode
 }
