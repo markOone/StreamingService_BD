@@ -17,9 +17,16 @@ public class Movie {
     @Column(name = "movie_id")
     private Long id;
 
+    @Column(name = "title", nullable = false, length = 255)
     private String title;
+
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "year", nullable = false)
     private Integer year;
+
+    @Column(name = "rating", precision = 3, scale = 1)
     private Double rating;
 
     @ManyToOne

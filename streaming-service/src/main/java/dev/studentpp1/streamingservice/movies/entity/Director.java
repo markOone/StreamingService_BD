@@ -25,7 +25,7 @@ public class Director {
     @Column(name = "surname",  nullable = false, length = 100)
     private String surname;
 
-    @Column(name = "biography", columnDefinition = "TEXTS")
+    @Column(name = "biography", columnDefinition = "TEXT")
     private String biography;
 
     @OneToMany(mappedBy = "director")
