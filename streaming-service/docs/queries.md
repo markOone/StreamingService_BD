@@ -169,6 +169,6 @@ LIMIT 20
 ## Приклад виводу:
 | fullName | totalMovies | distinctDirectors | actorRating                                                    | rankInSystem |performanceStatus|
 | :--- |:-------------| :--- |:------------------------------------------------------------------------| :--- | :--- |
-| Leonardo DiCaprio | 5 | 3       | 8.9 | 1                  | Above Average |
-| Brad Pitt | 4      | 2 | 7.2                                |2| Below Average |
-| Jonah Hill | 2        | 1 | 8.1 | 3   | 3 | Above Average|
+| Leonardo DiCaprio | 5 | 3 | 8.9 | 1 | Above Average |
+| Brad Pitt         | 4  | 2 | 7.2 |2| Below Average |
+| Jonah Hill        | 2 | 1 | 8.1 | 3 | Above Average|
